@@ -26,8 +26,10 @@ public class LoginServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		UserDao ud = new UserDao();
+		req.setCharacterEncoding("utf-8");
 		String username = req.getParameter("username");
 		String password = req.getParameter("password");
+		System.out.println(username);
 		String pwd = ud.findUser(username);
 		if (pwd == null ) {
 			req.setAttribute("username", username);
@@ -40,7 +42,7 @@ public class LoginServlet extends HttpServlet {
 			req.getRequestDispatcher("login.jsp").forward(req, resp);
 		}
 		else {
-			req.getRequestDispatcher("index.html").forward(req, resp);
+			req.getRequestDispatcher("user_index.html").forward(req, resp);
 		}
 			
 	}

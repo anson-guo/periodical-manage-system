@@ -6,7 +6,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>登录系统界面</title>
+  <title>登录</title>
 
   <!-- 页面基本样式 -->
   <link href="./css/login.css" rel="stylesheet">
@@ -27,6 +27,8 @@
   <script src="./js/bootbox.min.js"></script>
   
 </head>
+
+
 <body class="text-center">
   <!-- 登录表单 -->
   <form class="form-signin" action="#" method="post">
@@ -63,6 +65,7 @@
 
       // 弹出框提醒
       $("#btn_login").click(function () {
+    	var message = $("#message_text").val();
         let username = $("#inputUsername").val();
         let password = $("#inputPassword").val();
 
@@ -74,6 +77,9 @@
         if (password.length === 0) {
           bootbox.alert("请输入密码！");
           return false;
+        }
+        if(message.length != 0){
+        	bootbox.alet(message);
         }
       });
 
