@@ -42,6 +42,8 @@ public class LoginServlet extends HttpServlet {
 			req.getRequestDispatcher("login.jsp").forward(req, resp);
 		}
 		else {
+			System.out.println("user is ok");
+			req.getSession().setAttribute("username", username);
 			req.getRequestDispatcher("user_index.html").forward(req, resp);
 		}
 			

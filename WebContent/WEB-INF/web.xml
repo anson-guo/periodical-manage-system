@@ -5,6 +5,24 @@
     <welcome-file>login.jsp</welcome-file>
   </welcome-file-list>
   
+  <filter>
+  	<filter-name>loginFilter</filter-name>
+  	<filter-class>hong.guo.filter.LoginFilter</filter-class>
+	  <init-param>
+		  <param-name>exceptPage</param-name>
+		  <param-value>LoginServlet;login.jsp;bootstrap.min.css;jquery.slideunlock.js;jquery-3.2.1.min.js;jquery.validate.js;bootstrap.min.js;bootbox.min.js</param-value>
+	  </init-param>
+	  <init-param>
+	  	<param-name>encoding</param-name>
+	  	<param-value>UTF-8</param-value>
+	  </init-param>
+  </filter>
+  
+  <filter-mapping>
+  	<filter-name>loginFilter</filter-name>
+  	<url-pattern>*</url-pattern>
+  </filter-mapping>
+  
   <servlet>
   	<servlet-name>LoginServlet</servlet-name>
   	<servlet-class>hong.guo.loginServlet.LoginServlet</servlet-class>
@@ -22,4 +40,5 @@
   	<servlet-name>RegistServlet</servlet-name>
   	<url-pattern>/RegistServlet</url-pattern>
   </servlet-mapping>
+  
 </web-app>
