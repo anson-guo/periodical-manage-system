@@ -7,20 +7,19 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>用户借阅</title>
-
-  <link rel="stylesheet" href="css/reset.css">
-
+  <title>用户</title>
   <!-- Bootstrap core CSS -->
   <link href="./css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Custom styles for this template -->
-  <link href="./css/dashboard.css" rel="stylesheet">
-</head>
+  <link href="./css/user_index.css" rel="stylesheet">
 
+  <script src="js/jquery-3.2.1.min.js"></script>
+
+</head>
 <body>
   <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">读者A</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#" id="reader"></a>
     <!-- <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
     <ul class="navbar-nav px-3">
       <li class="nav-item text-nowrap">
@@ -47,18 +46,7 @@
                 查询期刊
               </a>
             </li>
-            <li class="nav-item" id="menu-item">
-              <a class="nav-link" href="#">
-                <span data-feather="layers"></span>
-                借阅期刊
-              </a>
-            </li>
-            <li class="nav-item" id="menu-item">
-              <a class="nav-link" href="#">
-                <span data-feather="bar-chart-2"></span>
-                归还期刊
-              </a>
-            </li>
+
             <li class="nav-item" id="menu-item">
               <a class="nav-link" href="#">
                 <span data-feather="users"></span>
@@ -83,37 +71,40 @@
             <div class="detail-information fl">
               <p>
                 <label for="">姓名：</label>
-                <span>郭敬安</span>
+                <span id="name"></span>
               </p>
               <p>
                 <label for="">性别：</label>
-                <span>男</span>
+                <span id="sex"></span>
               </p>
               <p>
                 <label for="">部门：</label>
-                <span>web前端开发部</span>
+                <span id="department"></span>
               </p>
               <p>
                 <label for="">借书证号：</label>
-                <span>2015110313</span>
+                <span id="borrow_num"></span>
+              </p>
+              <p>
+                <label for="">信誉值：</label>
+                <span id="reputation_score"></span>
               </p>
             </div>
           </div>
           <!-- 用户借阅信息，当前借阅状态、我的信誉、我的推荐、历史借阅记录 -->
           <div class="borrow-information">
             <ul class="nav nav-pills" role="tablist">
+
               <li class="nav-item">
                 <a class="nav-link active" data-toggle="pill" href="#home">我的借阅</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" data-toggle="pill" href="#menu1">我的信誉</a>
+                <a class="nav-link" data-toggle="pill" href="#menu1">借阅历史</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" data-toggle="pill" href="#menu2">我的推荐</a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" data-toggle="pill" href="#menu3">借阅历史</a>
-              </li>
+
             </ul>
 
             <!-- Tab panes -->
@@ -128,84 +119,14 @@
                       <th>期刊名称</th>
                       <th>借阅时间</th>
                       <th>归还时间</th>
+                      <th>操作</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr>
-                      <td>20151103</td>
-                      <td>川师文摘</td>
-                      <td>2018.02.05</td>
-                      <td>2018.03.05</td>
-                    </tr>
-                    <tr>
-                      <td>20151103</td>
-                      <td>川师文摘</td>
-                      <td>2018.02.05</td>
-                      <td>2018.03.05</td>
-                    </tr>
-                    <tr>
-                      <td>20151103</td>
-                      <td>川师文摘</td>
-                      <td>2018.02.05</td>
-                      <td>2018.03.05</td>
-                    </tr>
-                  </tbody>
+                  <tbody id="my-borrowing"></tbody>
                 </table>
               </div>
+
               <div id="menu1" class="container tab-pane fade">
-                <br>
-                <h3>我的信誉</h3>
-                <p>这里记录了您的信用记录，如果您爱护借出的每一本书籍，那么您的信誉记录一定是优秀的。</p>
-                <table class="table table-hover">
-                  <thead>
-                    <tr>
-                      <th>期刊代号</th>
-                      <th>期刊名称</th>
-                      <th>借阅时间</th>
-                      <th>应归还时间</th>
-                      <th>实际归还时间</th>
-                      <th>我的信誉度</th>
-                      <th>备注</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>20151103</td>
-                      <td>川师文摘</td>
-                      <td>2018.02.05</td>
-                      <td>2018.03.05</td>
-                      <td>2018.03.08</td>
-                      <td>-1</td>
-                      <td>逾期归还</td>
-                    </tr>
-                    <tr>
-                      <td>20151103</td>
-                      <td>川师文摘</td>
-                      <td>2018.02.05</td>
-                      <td>2018.03.05</td>
-                      <td>2018.02.25</td>
-                      <td>-2</td>
-                      <td>期刊损坏</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <p>
-                  当前信誉值：
-                  <span>7</span>分
-                </p>
-              </div>
-              <div id="menu2" class="container tab-pane fade">
-                <br>
-                <h3>我的推荐</h3>
-                <form action="#" class="form-group">
-                  <label for="new-book">请输入要推荐的期刊名称：</label>
-                  <input type="text" class="form-control" id="new-book">
-                  <button type="button" class="btn btn-info">提交申请</button>
-                </form>
-
-
-              </div>
-              <div id="menu3" class="container tab-pane fade">
                 <br>
                 <h3>借阅历史</h3>
                 <table class="table table-hover">
@@ -214,31 +135,26 @@
                       <th>期刊代号</th>
                       <th>期刊名称</th>
                       <th>借阅时间</th>
-                      <th>归还状态</th>
+                      <th>归还时间</th>
+                      <th>备注</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr>
-                      <td>20151103</td>
-                      <td>川师文摘</td>
-                      <td>2018.02.05</td>
-                      <td>待归还</td>
-                    </tr>
-                    <tr>
-                      <td>20151103</td>
-                      <td>川师文摘</td>
-                      <td>2018.02.05</td>
-                      <td>已归还</td>
-                    </tr>
-                    <tr>
-                      <td>20151103</td>
-                      <td>川师文摘</td>
-                      <td>2018.02.05</td>
-                      <td>已归还</td>
-                    </tr>
+                  <tbody id="my-borrow-history">
                   </tbody>
                 </table>
               </div>
+
+              <div id="menu2" class="container tab-pane fade">
+                <br>
+                <h3>我要推荐</h3>
+                <form action="#" class="form-group">
+                  <label for="new-book">请输入要推荐的期刊名称：</label>
+                  <input type="text" class="form-control" id="new-book">
+                  <button type="button" class="btn btn-info">提交申请</button>
+                </form>
+              </div>
+
+
             </div>
           </div>
         </div>
@@ -309,23 +225,7 @@
         </div>
       </main>
 
-      <main role="main" id="search-book" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 hidden">
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-          <h1 class="h2">借阅期刊</h1>
-        </div>
-        <div class="page-body">
-          这是借阅期刊
-        </div>
-      </main>
 
-      <main role="main" id="search-book" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 hidden">
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-          <h1 class="h2">归还期刊</h1>
-        </div>
-        <div class="page-body">
-          这是归还期刊
-        </div>
-      </main>
 
       <main role="main" id="search-book" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 hidden">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
@@ -408,12 +308,19 @@
           required: "请再次输入您的新密码",
           equalTo: "两次密码输入不一致"
         }
-       
+
       }
     }
 
     );
   </script>
+
+  <!-- 测试JSON数据 -->
+  <script src="test_data/test_borrow_JSON.js"></script>
+
+  <!-- import JS -->
+ 
+  <script src="js/user_index.js"></script>
 
 </body>
 
