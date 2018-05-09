@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -38,12 +38,12 @@
     <label for="inputUsername" class="sr-only">用户名</label>
     <!-- 获取之前输入到 -->
     <%
-    	String username = (String) request.getAttribute("username");
-    	if(username==null){
-    		username="";
+    	String idnumber = (String) request.getAttribute("idnumber");
+    	if(idnumber==null){
+    		idnumber="";
     	}
     %>
-    <input type="text" id="inputUsername" name="username" class="form-control" placeholder="用户名" value="<%=username %>" autofocus>
+    <input type="text" id="inputUsername" name="idnumber" class="form-control" placeholder="用户名" value="<%=idnumber %>" autofocus>
     <br>
     <label for="inputPassword" class="sr-only">密码</label>
     <input type="password" id="inputPassword" name="password" class="form-control" placeholder="密码">

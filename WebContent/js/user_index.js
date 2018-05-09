@@ -1,26 +1,41 @@
 
-let user = user_information;
-
+$(function(){
+	console.log("start");
+	$.ajax({
+		url:"UserpageServlet",
+		method:"post",
+		success: function(data){
+			var user = data;
+			console.log(user);
+			user = JSON.parse(user);
+			loadBaseInfo(user);
+		},
+		error: function(){
+			console.log("error");
+		}
+	});	
+	console.log("end");
+})
 // 加载基本信息
-loadBaseInfo();
 
 // 加载“我的借阅”
-loadMyBorrowing();
+//loadMyBorrowing();
 
 // 加载“借阅历史”
-$("#menu1").click(loadBorrowHistory());
+//$("#menu1").click(loadBorrowHistory());
 
 
 /* ------------ 一堆的函数  ------------ */
 
 // 加载基本信息
-function loadBaseInfo() {
-    $("#reader").text(user.base.username);
-    $("#name").text(user.base.username);
-    $("#sex").text(user.base.sex);
-    $("#department").text(user.base.department);
-    $("#borrow_num").text(user.base.borrowNum);
-    $("#reputation_score").text(user.base.reputation_score);
+function loadBaseInfo(user) {
+	console.log(user);
+    $("#reader").text(user.readerName);
+    $("#name").text(user.readerName);
+    $("#sex").text(user.sex);
+    $("#department").text(user.department);
+    $("#borrow_num").text(user.readerID);
+    $("#reputation_score").text(user.reputation);
 }
 
 // 加载“我的借阅”
