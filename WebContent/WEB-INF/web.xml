@@ -26,6 +26,6 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>UserpageServlet</servlet-name>
-    <url-pattern>/UserpageServlet</url-pattern>
+    <url-pattern>*.php</url-pattern>
   </servlet-mapping>
 </web-app>

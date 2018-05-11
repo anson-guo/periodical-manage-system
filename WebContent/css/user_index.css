@@ -49,10 +49,28 @@ body {
   font-size: 1.2rem;
   margin-bottom: 2rem;
   padding-left: 2rem;
+  /* position: absolute; */
 }
-.nav li:hover{
-  color: #007bff;
+/* .my-nav li a,
+.my-nav li a svg,{
+  color: black !important;
+} */
+.my-nav li:hover{
+  background: #007bff;
 }
+.sidebar-active{
+  background: #007bff; 
+}
+.my-nav li a svg{
+  position: relative;
+  top: -3px;
+}
+.my-nav li:hover a, 
+.my-nav li:hover svg{
+  color: white !important;
+}
+
+
 .sidebar .nav-link:hover .feather,
 .sidebar .nav-link.active .feather {
   color: inherit;
@@ -66,7 +84,6 @@ body {
 /*
  * Navbar
  */
-
 .navbar-brand {
   padding-top: .75rem;
   padding-bottom: .75rem;
@@ -97,7 +114,11 @@ body {
 .my-nav li {
   padding-left: 3.5rem;
 }
-
+#menu-item{
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  text-align: left;
+}
 /*
  * Utilities
  */
@@ -105,11 +126,13 @@ body {
 .border-top { border-top: 1px solid #e5e5e5; }
 .border-bottom { border-bottom: 1px solid #e5e5e5; }
 
-
 .hidden{
   display: none;
 }
-
+.welcome-u{
+  font-size: 0.7rem !important;
+  /* color: gray; */
+}
 
 /* page-body */
 .clearfix:after,
@@ -131,6 +154,10 @@ body {
   /* border: 1px solid black; */
   background: #f8f9fa;
   padding: 2rem;
+  position: relative;
+}
+.head-logo{
+  margin-top: -18px;
 }
 .page-body form #key {
   width: 80%;
@@ -168,7 +195,12 @@ display: block;
 .page-body form #label+input{
   width: 20rem;
 }
+.main-page-ul li:hover a{
+  color: white;
+  background: #007bff;
+}
 
+/* 修改密码 */
 #change-psd div label:first-child{
   width: 8rem;
 }
@@ -181,4 +213,25 @@ display: block;
 .error{
   color: red;
   margin-left: 0 !important;
+}
+/* 分页 */
+.layui-box{
+ float: right;
+ margin-right: 2rem;
+}
+
+/* 表格 */
+#search-result-table tr td,
+#my-borrowing tr td{
+  vertical-align: middle;
+}
+
+/* 覆盖层 loading */
+.cover{
+  height: 100%;
+  width: 100%;
+  background: white url(../img/loading.gif) center center no-repeat;
+  position: absolute;  
+  left: 0;
+  top: 0;
 }

@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.nine.Dao.UserDao;
+import com.nine.Dao.ReaderDao;
 
 import net.sf.json.JSONObject;
 
@@ -26,7 +26,7 @@ public class LoginServlet extends HttpServlet {
 	}
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		UserDao ud = new UserDao();
+		ReaderDao ud = new ReaderDao();
 		req.setCharacterEncoding("utf-8");
 		String idnumber = req.getParameter("idnumber");
 		String password = req.getParameter("password");
@@ -46,7 +46,7 @@ public class LoginServlet extends HttpServlet {
 //			System.out.println("user is ok");
 			req.getSession().setAttribute("readerID", idnumber);
 			System.out.println(req.getSession().getAttribute("readerID")+" end login");
-			req.getRequestDispatcher("user_index.html").forward(req, resp);
+			resp.sendRedirect("user_index.html");
 		}
 			
 	}

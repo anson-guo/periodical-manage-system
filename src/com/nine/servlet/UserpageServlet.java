@@ -11,7 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.nine.Dao.UserDao;
+import com.nine.Dao.BorrowDao;
+import com.nine.Dao.ReaderDao;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -34,16 +35,34 @@ public class UserpageServlet extends HttpServlet {
 		req.setCharacterEncoding("UTF-8"); 
 		resp.setContentType("text/html;charset=utf-8");
 		resp.setHeader("Cache-Control", "no-cache");
-		System.out.println("start UserpageServlet");
-		UserDao ud = new UserDao();
-		String readerID =(String) req.getSession().getAttribute("readerID");
-		try {
-			JSONObject reader = ud.getReader(readerID);
-//			System.out.println(reader.toString());	
-			resp.getWriter().write(reader.toString());
-		} catch(IOException e) {
-			e.printStackTrace();
+		String action = req.getServletPath();
+		System.out.println("action is " + action);
+		if(action.equals("/userinfo.php")) {
+			System.out.println("start userinfo");
+			ReaderDao ud = new ReaderDao();
+			String readerID =(String) req.getSession().getAttribute("readerID");
+			try {
+				JSONObject reader = ud.getReader(readerID);
+				resp.getWriter().write(reader.toString());
+				return;
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
 		}
+		if(action.equals("/borrowinfo.php")) {
+			System.out.println("start borrowinfo");
+			BorrowDao bd = new BorrowDao();
+			String readerID =(String) req.getSession().getAttribute("readerID");
+			try {
+				JSONArray borrowinfo = bd.getBorrowList(readerID);
+				System.out.println(borrowinfo.toString());
+				resp.getWriter().write(borrowinfo.toString());
+				return;
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 }

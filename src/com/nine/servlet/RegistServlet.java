@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.nine.Dao.UserDao;
+import com.nine.Dao.ReaderDao;
 
 public class RegistServlet extends HttpServlet{
 
