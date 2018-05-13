@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.nine.Dao.BorrowDao;
-import com.nine.Dao.ReaderDao;
+import com.nine.dao.BorrowDao;
+import com.nine.dao.ReaderDao;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;

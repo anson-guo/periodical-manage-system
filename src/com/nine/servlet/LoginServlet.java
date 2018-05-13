@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.nine.Dao.ReaderDao;
+import com.nine.dao.ReaderDao;
 
 import net.sf.json.JSONObject;
 

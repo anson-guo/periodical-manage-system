@@ -8,12 +8,10 @@ setTimeout(function(){
 }, 500);
 //加载基本信息
 $(function(){
-	console.log("userinfo start");
 	$.ajax({
 		url:"userinfo.php",
 		method:"post",
 		before: function(){
-			console.log("use before");
 		},
 		success: function(data){
 			var user = data;
@@ -21,32 +19,43 @@ $(function(){
 			loadBaseInfo(user)	;
 		},
 		error: function(){
-			console.log("user error");
 		}
 	});	
-	console.log("end");
-});
-//我到借阅
-$(function(){
-	console.log("borow start");
+	//发送我的借阅ajax请求
 	$.ajax({
 		url:"borrowinfo.php",
 		method:"post",
 		before: function(){
-			console.log("begin");
 		},
 		success: function(data){
 			var borrowinfos = data;
-			console.log(borrowinfos);
 			borrowinfos = JSON.parse(borrowinfos);
 			loadMyBorrowing(borrowinfos);
 		},
 		error: function(){
-			console.log("error");
 		}
 	});	
-	console.log("end");
-})
+	//归还按钮
+	$.ajax({
+		url:"",
+		method:"post",
+		before: function(){
+			
+		},
+		success: function(data){
+			var messge = data;
+			if(message === "成功"){
+				//重新加载页面
+			}else{
+				//弹出提醒:
+			}
+		},
+		error: function(){
+			
+		}
+	})
+});
+
 // 加载基本信息
 
 // 加载“借阅历史”
@@ -89,7 +98,7 @@ function loadMyBorrowing(borowinfos) {
             $("#my-borrowing").append("<tr><td>" + borowinfos[i].periodicalID +
                 "</td><td>" + borowinfos[i].periodicalName +
                 "</td><td>" + borowinfos[i].beginDate +
-                "</td><td><a href='#'>归还</a></td></tr>");
+                "</td><td><a href='javascript:;'>归还</a></td></tr>");
         }
     } else {
         $("#my-borrowing").append("<tr><td>您暂时没有借阅期刊</td><tr>");
