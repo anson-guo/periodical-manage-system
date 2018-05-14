@@ -16,7 +16,7 @@ import net.sf.json.JSONObject;
 import net.sf.json.JSONString;
 
 public class ReaderDao {
-	private final String TABLE_NAME = "readertb";
+	private final String TABLE_R = "readertb";
 	private final String KEY_ID = "readerID";
 	private final String KEY_PD = "readerPD";
 	private final String KEY_NAME = "readerName";
@@ -24,7 +24,7 @@ public class ReaderDao {
 	private final String KEY_RT = "reputation";
 	private final String KEY_SEX = "sex";
 	private ComDao cd = new ComDao();
-
+	//查找用户得到密码
 	public String findUser(String readerID) {
 		//不调用数据库
 //		String pwd = null;
@@ -35,7 +35,7 @@ public class ReaderDao {
 //		}
 		//数据库
 		String psw = null;
-		String sql = "select " + KEY_ID + "," + KEY_PD + " from " + TABLE_NAME +  " where " + KEY_ID + "=?;";
+		String sql = "select " + KEY_ID + "," + KEY_PD + " from " + TABLE_R +  " where " + KEY_ID + "=?;";
 		Connection con = cd.getConnection();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -57,6 +57,7 @@ public class ReaderDao {
 		}
 		return psw;
 	}
+	//获取用户信息
 	public JSONObject getReader(String readerID) {
 		Reader temp_reader = new Reader();
 		JSONObject jsonObject = null;
@@ -64,7 +65,7 @@ public class ReaderDao {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql = "select "+ KEY_NAME +","+ KEY_DP + "," + KEY_RT+ "," + KEY_SEX +
-				" from " + TABLE_NAME + " where " + KEY_ID + "=?";
+				" from " + TABLE_R + " where " + KEY_ID + "=?";
 		try {
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, readerID);
@@ -84,5 +85,47 @@ public class ReaderDao {
 		}
 		return jsonObject;
 	}
-	
+	//修改密码
+	public boolean editPassword(String readerID, String password, String edit_password) {
+		String psw = null;
+		String sql = "select " + KEY_ID + "," + KEY_PD + " from " + TABLE_R +  " where " + KEY_ID + "=?;";
+		Connection con = cd.getConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+//		System.out.println(readerID);
+		try {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, readerID);
+			rs = pstmt.executeQuery();
+//			System.out.println(sql);
+			if(rs.next()) {
+//				System.out.println(rs.getString("readerPD"));
+				psw = rs.getString(2);
+//				System.out.println(psw);
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			cd.cloesConnection(rs, pstmt, con);
+		}
+		if (password.equals(psw)) {
+			//update readertb set readerPD='admin' where readerID='20150101';
+			sql = "update " + TABLE_R + " set "+KEY_PD+"=? where "+KEY_ID+"=?";
+			con = cd.getConnection();
+			try {
+				pstmt = con.prepareStatement(sql);
+				pstmt.setString(1, edit_password);
+				pstmt.setString(2, readerID);
+				pstmt.executeUpdate();
+//				System.out.println(sql);
+			}catch (SQLException e) {
+				e.printStackTrace();
+			}finally {
+				cd.cloesConnection(rs, pstmt, con);
+			}
+			return true;
+		}else {
+			return false;
+		}
+	}
 }

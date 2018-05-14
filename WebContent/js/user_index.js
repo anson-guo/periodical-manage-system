@@ -112,7 +112,9 @@ validateChangePassword();
 $("#searching").click(function () {
 	searchBook();
 });
-
+//修改密码
+$("#submint_password").click(function(){
+});
 /* ------------ 一堆的函数 ------------ */
 //
 
@@ -230,7 +232,7 @@ function searchBook() {
 			let search_JSON = {
 				"key": key,
 				"search_item": search_item,
-				"page":"1",
+				"page":"5",
 				"message": "search"
 			};
 			let search_String = JSON.stringify(search_JSON);
@@ -248,7 +250,7 @@ function searchBook() {
 					let $search_result_node = $("#search-result-table");
 					if ($($search_result_node).children().length == 0) {
 						$($search_result_node).append(
-							"<thead><tr><th>期刊代</th>" + "<th>期刊名</th>" + "<th>出版社</th>"
+							"<thead><tr>" + "<th>期刊名</th>" + "<th>出版社</th>"
 							+ "<th>可借数量</th>" + "<th>操作</th></tr></thead>");
 					}
 					// 模拟数据： 总共的查询结果条数
@@ -263,16 +265,17 @@ function searchBook() {
 										// ID，不用加
 										// # 号
 										count: max_num, // 数据总数，从服务端得到
-										limit: 1,
+										limit: 5,
 										jump: function (obj, first) {
 											// obj包含了当前分页的所有参数，比如：
 											// //得到当前页，以便向服务端请求对应页的数据。
-											 loadcurpage(obj.limit,result.search_result);
+											 loadcurpage((obj.limit>max_num? max_num: obj.limit),result.search_result);
 											//ajax
+//											console.log(obj.curr*5);
 											search_JSON = {
 													"key": key,
 													"search_item": search_item,
-													"page": obj.curr,
+													"page": obj.curr*5,
 													"message": "search"
 												};
 											search_String = JSON.stringify(search_JSON);
@@ -284,8 +287,9 @@ function searchBook() {
 													
 												},
 												success: function(result_2){
-													result_2 = JSON.parse(result_2);		
-													loadcurpage(obj.limit,result_2.search_result);
+													result_2 = JSON.parse(result_2);	
+//													console.log(result_2);
+													loadcurpage((obj.limit>max_num? max_num: obj.limit),result_2.search_result);
 												}
 											})
 										}
@@ -299,6 +303,7 @@ function searchBook() {
 	}
 };
 function loadcurpage(limit, search_result){
+//	console.log("limit is "+limit)
 	// //得到每页显示的条数
 	if ($("#search-result-tbody").text().length != 0) {
 		// console.log("here");
@@ -308,9 +313,7 @@ function loadcurpage(limit, search_result){
 		if (search_result[i] == null || search_result[i] == undefined) {
 			break;
 		} else {
-			let data = "<tr><td class='borrow_table_periodicalID'>"
-				+ search_result[i].periodicalID
-				+ "</td><td class='borrow_table_periodicalName'>"
+			let data =  "<tr><td class='borrow_table_periodicalName'>"
 				+ search_result[i].periodicalName
 				+ "</td><td>"
 				+ search_result[i].press

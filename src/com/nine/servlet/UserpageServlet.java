@@ -37,14 +37,14 @@ public class UserpageServlet extends HttpServlet {
 		resp.setHeader("Cache-Control", "no-cache");
 		String action = req.getServletPath();
 		System.out.println("action is " + action);
-		ReaderDao ud = new ReaderDao();
+		ReaderDao rd = new ReaderDao();
 		BorrowDao bd = new BorrowDao();
 		String readerID =(String) req.getSession().getAttribute("readerID");
 		//加载用户信息
 		if(action.equals("/userinfo.php")) {
 //			System.out.println("start userinfo");
 			try {
-				JSONObject reader = ud.getReader(readerID);
+				JSONObject reader = rd.getReader(readerID);
 				resp.getWriter().write(reader.toString());
 				return;
 			} catch(IOException e) {
@@ -88,12 +88,18 @@ public class UserpageServlet extends HttpServlet {
 				if(jsonin.getString("message").equals("search")) {
 					
 					JSONObject json = bd.searchlist(jsonin.getString("key"), jsonin.getString("search_item"),jsonin.getString("page"), readerID);
-//					System.out.println(json.toString());
+					System.out.println(json.toString());
 					resp.getWriter().write(json.toString());
 					return ;
-				}if(jsonin.getString("message").equals("borrow_periodical")) {
+				}
+				//借阅功能
+				if(jsonin.getString("message").equals("borrow_periodical")) {
 //					System.out.println("borrow_periodical :"+jsonin.toString());
 					bd.borrowPeriodical(readerID, jsonin.getString("periodicalID"));
+				}
+				if(jsonin.getString("message").equals("edit_password")) {
+					JSONObject json = JSONObject.fromObject(rd.editPassword(readerID, jsonin.getString("password"), jsonin.getString("edit_password")));
+					System.out.println(json.toString());
 				}
 			}else {
 				return ;

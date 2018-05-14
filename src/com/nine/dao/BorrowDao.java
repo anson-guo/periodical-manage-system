@@ -130,41 +130,61 @@ public class BorrowDao {
 		Connection con = cd.getConnection();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-//		select periodicalID, periodicalName, press, count(2) as count from periodicalstb
-//		where periodicalName like '%世界%'
-//		group by periodicalName;
-		String sql = "select " + KEY_PID+", " + KEY_PNAME +"," + KEY_PRESS+"," + "count(2) as count" +
-					" from "+ TABLE_P +
-					" where "+search_item+" like ? group by "+ KEY_PNAME +
-					" limit "+ (Integer.parseInt(endcount)-1) + "," + endcount;
-//		System.out.println(sql);
-		JSONObject jsonObject = null;
-		JSONArray jsonArray = new JSONArray();
-		Map<String,String> searchMap = new HashMap<String,String>();
+		
+		JSONObject return_json = new JSONObject();
 		int listcount = 0;
+		String  sql = "select " + KEY_PNAME +"," + KEY_PRESS+"," + "count(2) as count" +
+				" from "+ TABLE_P +
+				" where "+search_item+" like ? group by " + KEY_PNAME +", "+ KEY_PRESS;
+		
 		try {
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, "%"+key+"%");
 			rs = pstmt.executeQuery();
+			//计数
 			while(rs.next()) {
 				listcount ++;
-				searchMap.put(KEY_PID,rs.getString(1));
-				searchMap.put(KEY_PNAME,rs.getString(2));
-				searchMap.put(KEY_PRESS,rs.getString(3));
-				searchMap.put("number",rs.getString(4));
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			cd.cloesConnection(rs, pstmt, con);
+		}
+		return_json.put("listcount", listcount);
+		
+//		select periodicalID, periodicalName, press, count(2) as count from periodicalstb
+//		where periodicalName like '%世界%'
+//		group by periodicalName;
+		sql = "select " + KEY_PNAME +"," + KEY_PRESS+"," + "count(2) as count" +
+					" from "+ TABLE_P +
+					" where "+search_item+" like ? group by " + KEY_PNAME +", "+ KEY_PRESS +
+					" limit "+ (Integer.parseInt(endcount)-5 < 0? 0 : Integer.parseInt(endcount)-5) + "," + (Integer.parseInt(endcount) > listcount ? listcount: Integer.parseInt(endcount));
+		System.out.println("list : "+sql);
+		JSONObject jsonObject = null;
+		JSONArray jsonArray = new JSONArray();
+		Map<String,String> searchMap = new HashMap<String,String>();
+		
+		try {
+			con = cd.getConnection();
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, "%"+key+"%");
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				searchMap.put(KEY_PNAME,rs.getString(1));
+				searchMap.put(KEY_PRESS,rs.getString(2));
+				searchMap.put("number",rs.getString(3));
 //				select count(1) from borrowtb where periodicalID='115N000120170101' and readerID='20150101' and endDate = '0000-00-00';
-				sql = "select count(1) from "+TABLE_B+" where "+KEY_PID+"=? and "+KEY_RID+"=? and "+ KEY_EDATE+"='0000-00-00'";
-				cd.cloesConnection(rs, pstmt, con);
-				con = cd.getConnection();
-				pstmt = con.prepareStatement(sql);
-				pstmt.setString(1, searchMap.get(KEY_PID));
-				pstmt.setString(2, readerID);
+				String sql2 = "select count(1) from "+TABLE_B+" where "+KEY_PID+"=? and "+KEY_RID+"=? and "+ KEY_EDATE+"='0000-00-00'";
+				Connection con2 = cd.getConnection();
+				PreparedStatement pstmt2 = con.prepareStatement(sql2);
+				pstmt2.setString(1, searchMap.get(KEY_PID));
+				pstmt2.setString(2, readerID);
 //				System.out.println(sql);
-				rs = pstmt.executeQuery();
-				if(rs.next()) {
+				ResultSet rs2 = pstmt2.executeQuery();
+				if(rs2.next()) {
 //					System.out.println("KEY_PID is " + searchMap.get(KEY_PID)+" "+ readerID);
 //					System.out.println("rs.getString is "+rs.getString(1));
-					if(rs.getString(1).equals("1")) {
+					if(rs2.getString(1).equals("1")) {
 //						System.out.println("true");
 						searchMap.put("borrowed", "true");
 					}else {
@@ -172,6 +192,7 @@ public class BorrowDao {
 						searchMap.put("borrowed", "false");
 					}
 				}
+				cd.cloesConnection(rs2, pstmt2, con2);
 				jsonObject = JSONObject.fromObject(searchMap);
 				jsonArray.add(jsonObject);
 			}
@@ -180,8 +201,7 @@ public class BorrowDao {
 		}finally {
 			cd.cloesConnection(rs,pstmt, con);
 		}
-		JSONObject return_json = new JSONObject();
-		return_json.put("listcount", 3);
+		
 		return_json.put("search_result", jsonArray);
 		return return_json;
 	}
