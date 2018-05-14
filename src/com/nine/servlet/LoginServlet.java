@@ -45,7 +45,7 @@ public class LoginServlet extends HttpServlet {
 		else {
 //			System.out.println("user is ok");
 			req.getSession().setAttribute("readerID", idnumber);
-			System.out.println(req.getSession().getAttribute("readerID")+" end login");
+//			System.out.println(req.getSession().getAttribute("readerID")+" end login");
 			resp.sendRedirect("user_index.html");
 		}
 			

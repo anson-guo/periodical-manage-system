@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -32,13 +33,15 @@ public class ComDao {
 				e.printStackTrace();
 			}
 		}catch(Exception e) {
-			
+			e.printStackTrace();
 		}
-		
 		return connection;
 	}
-	public void cloesConnection(PreparedStatement pstmt, Connection con) {
+	public void cloesConnection(ResultSet rs, PreparedStatement pstmt, Connection con) {
 		try {
+			if(rs != null) {
+				rs.close();
+			}
 			if(pstmt != null) {
 				pstmt.close();
 			}

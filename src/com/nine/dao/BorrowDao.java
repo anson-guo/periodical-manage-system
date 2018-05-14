@@ -4,8 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 import com.nine.util.BorrowElement;
@@ -19,12 +20,14 @@ public class BorrowDao {
 	private final String KEY_RID = "readerID";
 	private final String KEY_PID = "periodicalID";
 	private final String KEY_PNAME = "periodicalName";
+	private final String KEY_PRESS = "press";
 	private final String KEY_BDATE = "beginDate";
 	private final String KEY_EDATE = "endDate";
 	private final String KEY_REMARKS = "remarks";
 	private ComDao cd = new ComDao();
 	
 //	public JSONObject getBorrowList(String readerID) {
+	//获取借阅列表
 	public JSONArray getBorrowList(String readerID) {
 		JSONObject jsonObject = null;
 		Map<String, Object> borrowMap = new HashMap<String, Object>();
@@ -35,7 +38,7 @@ public class BorrowDao {
 		String sql = "select " + TABLE_B + "." + KEY_PID + "," + KEY_PNAME + "," + KEY_BDATE + "," + KEY_EDATE + "," + KEY_REMARKS +
 				" from " + TABLE_B + "," + TABLE_P +
 				" where " + TABLE_B + "." + KEY_PID + "=" + TABLE_P + "." + KEY_PID + " and " + KEY_EDATE +"='0'" + " and " + KEY_RID + "='" + readerID +"'";
-		System.out.println(sql);
+//		System.out.println(sql);
 		try {
 			pstmt = con.prepareStatement(sql);
 			rs = pstmt.executeQuery();
@@ -58,8 +61,176 @@ public class BorrowDao {
 //			System.out.println(jsonArray.toString());
 		}catch(SQLException e) {
 			e.printStackTrace();
+		}finally {
+			cd.cloesConnection(rs, pstmt, con);
 		}
 //		return jsonObject;
 		return jsonArray;
+	}
+	//归还图书
+	public void returnPeriodical( String readerID, String periodicalID) {
+		Date nowtime = new Date();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Connection con=cd.getConnection();
+		PreparedStatement pstmt = null;
+//		update borrowtb set endDate='2018-01-05' where readerID='20150101' and periodicalID='115N000120170101';
+		String sql = "update " + TABLE_B+" set " + KEY_EDATE +"=? where " + KEY_RID + "=? and " +
+					KEY_PID + "=?";
+//		System.out.println(sql);
+//		System.out.println(df.format(nowtime));
+		try {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, df.format(nowtime).toString());
+			pstmt.setString(2, readerID);
+			pstmt.setString(3, periodicalID);
+			pstmt.executeUpdate();
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}finally {
+			cd.cloesConnection(null, pstmt, con);
+		}
+	}
+	//显示历史借阅
+	public JSONArray historylist(String readerID) {
+		Connection con = cd.getConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+//		select borrowtb.periodicalID, periodicalName, beginDate, endDate, remarks
+//		from borrowtb, periodicalstb
+//		where readerID='20150101' and borrowtb.periodicalID = periodicalstb.periodicalID and endDate not like '0000-00-00';
+		String sql = "select "+ TABLE_B + "." + KEY_PID + ", " + KEY_PNAME + ", " + KEY_BDATE + ", "+ KEY_EDATE + ", "+ KEY_REMARKS +
+					" from " + TABLE_B + ", "+ TABLE_P +
+					" where " + TABLE_B +"." + KEY_PID + "=" + TABLE_P + "." + KEY_PID +" and " + KEY_RID +"=? and " + KEY_EDATE + " != '0000-00-00'";
+		Map<String, String> historyMap = new HashMap<String,String>();
+		JSONObject jsonObject = null;
+		JSONArray jsonArray = new JSONArray();
+		try {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, readerID); 
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				historyMap.put(KEY_PID, rs.getString(1));
+				historyMap.put(KEY_PNAME, rs.getString(2));
+				historyMap.put(KEY_BDATE, rs.getString(3));
+				historyMap.put(KEY_EDATE, rs.getString(4));
+				historyMap.put(KEY_REMARKS, rs.getString(5));
+				jsonObject = JSONObject.fromObject(historyMap);
+//				System.out.println(jsonObject.toString());
+				jsonArray.add(jsonObject);
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			cd.cloesConnection(rs, pstmt, con);
+		}
+		return jsonArray;
+	}
+	//搜索框
+	public JSONObject searchlist(String key, String search_item, String endcount, String readerID) {
+		Connection con = cd.getConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+//		select periodicalID, periodicalName, press, count(2) as count from periodicalstb
+//		where periodicalName like '%世界%'
+//		group by periodicalName;
+		String sql = "select " + KEY_PID+", " + KEY_PNAME +"," + KEY_PRESS+"," + "count(2) as count" +
+					" from "+ TABLE_P +
+					" where "+search_item+" like ? group by "+ KEY_PNAME +
+					" limit "+ (Integer.parseInt(endcount)-1) + "," + endcount;
+//		System.out.println(sql);
+		JSONObject jsonObject = null;
+		JSONArray jsonArray = new JSONArray();
+		Map<String,String> searchMap = new HashMap<String,String>();
+		int listcount = 0;
+		try {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, "%"+key+"%");
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				listcount ++;
+				searchMap.put(KEY_PID,rs.getString(1));
+				searchMap.put(KEY_PNAME,rs.getString(2));
+				searchMap.put(KEY_PRESS,rs.getString(3));
+				searchMap.put("number",rs.getString(4));
+//				select count(1) from borrowtb where periodicalID='115N000120170101' and readerID='20150101' and endDate = '0000-00-00';
+				sql = "select count(1) from "+TABLE_B+" where "+KEY_PID+"=? and "+KEY_RID+"=? and "+ KEY_EDATE+"='0000-00-00'";
+				cd.cloesConnection(rs, pstmt, con);
+				con = cd.getConnection();
+				pstmt = con.prepareStatement(sql);
+				pstmt.setString(1, searchMap.get(KEY_PID));
+				pstmt.setString(2, readerID);
+//				System.out.println(sql);
+				rs = pstmt.executeQuery();
+				if(rs.next()) {
+//					System.out.println("KEY_PID is " + searchMap.get(KEY_PID)+" "+ readerID);
+//					System.out.println("rs.getString is "+rs.getString(1));
+					if(rs.getString(1).equals("1")) {
+//						System.out.println("true");
+						searchMap.put("borrowed", "true");
+					}else {
+//						System.out.println("false");
+						searchMap.put("borrowed", "false");
+					}
+				}
+				jsonObject = JSONObject.fromObject(searchMap);
+				jsonArray.add(jsonObject);
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			cd.cloesConnection(rs,pstmt, con);
+		}
+		JSONObject return_json = new JSONObject();
+		return_json.put("listcount", 3);
+		return_json.put("search_result", jsonArray);
+		return return_json;
+	}
+	//借阅图书
+	public void borrowPeriodical(String readerID, String periodicalID) {
+		Connection con = cd.getConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		Date nowtime = new Date();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//		SELECT count(1) from borrowtb where readerID='20150101' and periodicalID='115N000120170101';
+		String sql = "select count(1) from " + TABLE_B + " where " + KEY_PID + "=? and " + KEY_RID + "=?";
+//		System.out.println("borrowPeriodical---------------------------");
+//		System.out.println(sql);
+		try {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(2, readerID);
+			pstmt.setString(1, periodicalID);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				if(rs.getInt(1) == 0) {
+//					insert into borrowtb(readerID, periodicalID, beginDate,endDate) values('20150101','115N000120170101','2017-05-12','0');
+					sql = "insert into "+TABLE_B +"("+KEY_RID+", "+KEY_PID+", "+KEY_BDATE+", "+KEY_EDATE+ ") values(?,?,?,'0000-00-00')";
+//					System.out.println(sql);
+					cd.cloesConnection(rs, pstmt, con);
+					con = cd.getConnection();
+					pstmt = con.prepareStatement(sql);
+					pstmt.setString(1, readerID);
+					pstmt.setString(2, periodicalID);
+					pstmt.setString(3, df.format(nowtime));
+					
+				}else {
+//					update borrowtb set beginDate='2018-05-12', endDate='0000-00-00' where readerID='20150101' and periodicalID='115N000320170101';
+					sql = "update "+ TABLE_B + " set " + KEY_BDATE +"=?, "+ KEY_EDATE +"='0000-00-00' where " + KEY_RID + "=? and " + KEY_PID + "=?";
+//					System.out.println(sql);
+					cd.cloesConnection(rs, pstmt, con);
+					con = cd.getConnection();
+					pstmt = con.prepareStatement(sql);
+					pstmt.setString(1, df.format(nowtime));
+					pstmt.setString(2, readerID);
+					pstmt.setString(3, periodicalID);
+				}				
+				pstmt.executeUpdate();
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			cd.cloesConnection(rs,pstmt, con);
+		}
+		System.out.println("end borrowperiodical----------------------");
 	}
 }

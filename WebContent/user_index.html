@@ -113,7 +113,7 @@
                 <a class="nav-link active" data-toggle="pill" href="#home">我的借阅</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" data-toggle="pill" href="#menu1">借阅历史</a>
+                <a class="nav-link" data-toggle="pill" id="borrowhstory_btn" href="#menu1">借阅历史</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" data-toggle="pill" href="#menu2">我要推荐</a>
@@ -148,6 +148,7 @@
                       <th>期刊代号</th>
                       <th>期刊名称</th>
                       <th>借阅时间</th>
+                      <th>归还时间</th>
                       <th>备注</th>
                     </tr>
                   </thead>
@@ -182,9 +183,9 @@
             <button type="button" class="btn btn-primary" id="searching">查询</button>
 
             <label class="radio-inline">
-              <input type="radio" name="search_item" value="periodical_name" checked>期刊名</label>
+              <input type="radio" name="search_item" value="periodicalName" checked>期刊名</label>
             <label class="radio-inline">
-              <input type="radio" name="search_item" value="periodical_id">期刊代号</label>
+              <input type="radio" name="search_item" value="periodicalID">期刊代号</label>
             <label class="radio-inline">
               <input type="radio" name="search_item" value="press">出版社</label>
           </form>
@@ -234,18 +235,19 @@
       <div class="modal-content">
         <!-- 模态框头部 -->
         <div class="modal-header">
-          <h4 class="modal-title">模态框头部</h4>
+          <h4 class="modal-title">借阅书籍</h4>
           <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
    
         <!-- 模态框主体 -->
         <div class="modal-body">
-          模态框内容..
+          
         </div>
    
         <!-- 模态框底部 -->
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+          <button id='borrow_cancle' type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+          <button id='borrow_confirm' type="button" class="btn btn-primary" data-dismiss="modal">确认借阅</button>
         </div>
    
       </div>

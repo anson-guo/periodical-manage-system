@@ -53,7 +53,7 @@ public class ReaderDao {
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
-			cd.cloesConnection(pstmt, con);
+			cd.cloesConnection(rs, pstmt, con);
 		}
 		return psw;
 	}
@@ -80,7 +80,7 @@ public class ReaderDao {
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}finally {
-			cd.cloesConnection(pstmt, con);
+			cd.cloesConnection(rs, pstmt, con);
 		}
 		return jsonObject;
 	}
