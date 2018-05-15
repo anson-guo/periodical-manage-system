@@ -86,8 +86,9 @@ public class ReaderDao {
 		return jsonObject;
 	}
 	//修改密码
-	public boolean editPassword(String readerID, String password, String edit_password) {
+	public boolean validatePassword(String readerID, String old_password) {
 		String psw = null;
+//		SELECT readerID,readerPD FROM jichen.readertb where readerID='2015110305';
 		String sql = "select " + KEY_ID + "," + KEY_PD + " from " + TABLE_R +  " where " + KEY_ID + "=?;";
 		Connection con = cd.getConnection();
 		PreparedStatement pstmt = null;
@@ -108,24 +109,40 @@ public class ReaderDao {
 		}finally {
 			cd.cloesConnection(rs, pstmt, con);
 		}
-		if (password.equals(psw)) {
-			//update readertb set readerPD='admin' where readerID='20150101';
-			sql = "update " + TABLE_R + " set "+KEY_PD+"=? where "+KEY_ID+"=?";
-			con = cd.getConnection();
-			try {
-				pstmt = con.prepareStatement(sql);
-				pstmt.setString(1, edit_password);
-				pstmt.setString(2, readerID);
-				pstmt.executeUpdate();
-//				System.out.println(sql);
-			}catch (SQLException e) {
-				e.printStackTrace();
-			}finally {
-				cd.cloesConnection(rs, pstmt, con);
-			}
+		if(psw.equals(old_password)) {
 			return true;
 		}else {
 			return false;
 		}
+	}
+	public boolean modifyPassword(String readerID, String new_password) {
+//		update readertb set readerPD='admin1' where readerID='2015110305';
+		String sql = "update "+TABLE_R+" set "+KEY_PD+"=? where "+KEY_ID+"=?";
+		Connection con = cd.getConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+//		System.out.println(readerID);
+		try {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, new_password);
+			pstmt.setString(2, readerID);
+			pstmt.executeUpdate();
+		}catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}finally {
+			cd.cloesConnection(rs, pstmt, con);
+		}
+		return true;
+	}
+	//修改读者信息
+	public boolean modifyReader(String readerID, String readerName, String department, String reputation) {
+//		update readertb set readerName='邓强1',department='志工部',reputation='10'
+//		where readerID='2015110305';
+		String sql = "update "+TABLE_R+" set "+ KEY_NAME+"=?," + KEY_DP +"=?," + KEY_RT + "=? where "+KEY_ID+"=?";
+		Connection con = cd.getConnection();
+		PreparedStatement pstmt = null;
+		
+		return true;
 	}
 }

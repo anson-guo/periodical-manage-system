@@ -5,18 +5,21 @@ setTimeout(function () {
 
 	});
 }, 500);
-// 加载基本信息
+
 $(function () {
+	// 加载基本信息
 	let logininfo = function () {
 		$.ajax({
-			url: "userinfo.php",
+			url: "user/userinfo.php",
 			method: "post",
 			before: function () {
 			},
 			success: function (data) {
-				var user = data;
-				user = JSON.parse(user);
-				loadBaseInfo(user);
+				if(data!=null){
+					var user = data;
+					user = JSON.parse(user);
+					loadBaseInfo(user);
+				}
 			},
 			error: function () {
 			}
@@ -26,44 +29,47 @@ $(function () {
 	// 发送我的借阅ajax请求
 	var borrowinfo = function () {
 		$.ajax({
-			url: "borrowinfo.php",
+			url: "user/borrowinfo.php",
 			method: "post",
 			before: function () {
 			},
 			success: function (data) {
-				var borrowinfos = data;
-				borrowinfos = JSON.parse(borrowinfos);
-				loadMyBorrowing(borrowinfos);
+				if(data!=null){
+					var borrowinfos = data;
+					borrowinfos = JSON.parse(borrowinfos);
+					loadMyBorrowing(borrowinfos);
 
-				// 归还按钮
-				$(".return_perioidcal").click(
-						function () {
-							// get Id
-							let periodical_id = $(this).parent().parent().children(".book_id").html();
-							// console.log(periodical_id);
-							let return_periodical_JSON = {
-								"periodicalID": periodical_id,
-								"message": "return_periodical"
-							};
-							let return_periodical_String = JSON.stringify(return_periodical_JSON);
-							console.log(return_periodical_String);
-							$.ajax({
-								url:"sendmessage.php",
-								method:"post",
-								data: return_periodical_String,
-								before: function(){
-									console.log("befire");
-								},
-								success: function(){
-									console.log("success");
-									borrowinfo();
-								},
-								error:function(){
-									console.log("error");
-								}
-							});
-							return false;
+					// 归还按钮-----------------------加入模态框
+					$(".return_perioidcal").click(
+							function () {
+								// get Id
+								let periodical_id = $(this).parent().parent().children(".book_id").html();
+								// console.log(periodical_id);
+								let return_periodical_JSON = {
+									"periodicalID": periodical_id,
+									"message": "return_periodical"
+								};
+								let return_periodical_String = JSON.stringify(return_periodical_JSON);
+								console.log(return_periodical_String);
+								$.ajax({
+									url:"user/sendmessage.php",
+									method:"post",
+									data: return_periodical_String,
+									before: function(){
+										console.log("befire");
+									},
+									success: function(return_periodical_result){
+										var return_periodical_result = JSON.parse(return_periodical_result);
+										console.log("return_periodical_result.istrue");
+										borrowinfo();
+									},
+									error:function(){
+										console.log("error");
+									}
+								});
+								return false;
 						});
+				}
 			},
 			error: function () {
 			}
@@ -74,16 +80,17 @@ $(function () {
 	$("#borrowhstory_btn").click(function(){
 		console.log("click btn");
 		$.ajax({
-			url:"borrow_history.php",
+			url:"user/borrow_history.php",
 			method: "post",
 			before: function(){
 				
 			},
 			success: function(data){
-				var borrowHistory_JSON = JSON.parse(data);
-//				console.log(data);
-				loadBorrowHistory(borrowHistory_JSON);
-				
+				if(data !=null){
+					var borrowHistory_JSON = JSON.parse(data);
+//					console.log(data);
+					loadBorrowHistory(borrowHistory_JSON);
+				}
 			},
 			error: function(){
 				
@@ -92,10 +99,6 @@ $(function () {
 	});
 });
 
-// 加载基本信息
-
-// 加载“借阅历史”
-// $("#menu1").click(loadyyBorrowHistory());
 
 // 侧边导航切换
 switchNavigation();
@@ -113,7 +116,61 @@ $("#searching").click(function () {
 	searchBook();
 });
 //修改密码
+//验证旧密码
+$("#old-psd").blur(function(){
+	let old_psd = $(this).val();
+	let old_psd_JSON = {
+			"message": "validatePassword",
+			"old_psd": old_psd
+	}
+	$.ajax({
+		url: "user/sendmessageUser.php",
+		method: "post",
+		data:JSON.stringify(old_psd_JSON),
+		before: function(){
+			
+		},
+		success: function(result_validate_message){
+			if(result_validate_message!=null){
+				var result_validate_message = JSON.parse(result_validate_message);
+				console.log(result_validate_message.istrue);
+				if (result_validate_message.istrue == false){
+					bootbox.alert("旧密码错误");
+				}
+			}
+		}
+	});
+});
+//跟新密码
 $("#submint_password").click(function(){
+	let new_psd = $("#new-psd").val();
+	let new_psd_JSON = {
+			"message": "modifyPassword",
+			"new_psd": new_psd
+	}
+	$.ajax({
+		url: "user/sendmessageUser.php",
+		method: "post",
+		data:JSON.stringify(new_psd_JSON),
+		before: function(){
+			
+		},
+		success: function(result_modify_message){
+			if(result_modify_message!=data){
+				var result_modify_message = JSON.parse(result_modify_message);
+				console.log(result_modify_message.istrue);
+				if (result_modify_message.istrue == false){
+					bootbox.alert("修改失败请重试");
+				}
+				$("#new-psd").val("");
+				$("#old-psd").val("");
+				$("#again-psd").val("");
+			}
+		},
+		error: function(){
+			console.log();
+		}
+	});
 });
 /* ------------ 一堆的函数 ------------ */
 //
@@ -224,54 +281,53 @@ function searchBook() {
 	if (key.length == 0) {
 		bootbox.alert("请输入您要查询的关键字！");
 	} else {
-		// 这里要发送ajax请求
-			// 发送数据
-			let key = $("#key").val(); // 关键字
+		
+			let key = $("#key").val(); // 搜索关键字
 			let search_item = $(".form-inline input:checked").val(); // 查询条件
 //			console.log(key+search_item);
+			//构造与后台交互到json对象（关键字，查询条件，第一页默认显示页数）
 			let search_JSON = {
 				"key": key,
 				"search_item": search_item,
-				"page":"5",
+				"page":"5",//第一页的默认页数
 				"message": "search"
 			};
 			let search_String = JSON.stringify(search_JSON);
 //			console.log(search_String);
+			//发送ajax
 			$.ajax({
-				url: "sendmessage.php",
+				url: "user/sendmessage.php",
 				method: "post",
 				data: search_String,
 				before: function(){
 					
 				},
-				success: function(result){
-					result = JSON.parse(result);		
-					// 1. 加载表头
-					let $search_result_node = $("#search-result-table");
-					if ($($search_result_node).children().length == 0) {
-						$($search_result_node).append(
-							"<thead><tr>" + "<th>期刊名</th>" + "<th>出版社</th>"
-							+ "<th>可借数量</th>" + "<th>操作</th></tr></thead>");
-					}
-					// 模拟数据： 总共的查询结果条数
-					var max_num = result.listcount;
-					$("<tbody id='search-result-tbody'></tbody>").appendTo($search_result_node);
-					layui.use('laypage',function () {
+				success: function(search_result_first){
+					if(search_result_first!=null){
+							search_result_first = JSON.parse(search_result_first);		
+						// 1. 加载表头
+						let $search_result_node = $("#search-result-table");
+						if ($($search_result_node).children().length == 0) {
+							$($search_result_node).append(
+								"<thead><tr>" + "<th>期刊名</th>" + "<th>出版社</th>"
+								+ "<th>可借数量</th>" + "<th>操作</th></tr></thead>");
+						}
+						$("<tbody id='search-result-tbody'></tbody>").appendTo($search_result_node);
+						//总条数
+						let max_num = search_result_first.listcount
+						layui.use('laypage',function () {
 								var laypage = layui.laypage;
 								laypage.render({
-										elem: 'search-result-page', // 注意，这里的
-										// test1
-										// 是
-										// ID，不用加
-										// # 号
+										elem: 'search-result-page', // 注意，这里的test1是ID，不用加# 号
 										count: max_num, // 数据总数，从服务端得到
-										limit: 5,
+										limit: 5,//每页显示条数
 										jump: function (obj, first) {
 											// obj包含了当前分页的所有参数，比如：
 											// //得到当前页，以便向服务端请求对应页的数据。
-											 loadcurpage((obj.limit>max_num? max_num: obj.limit),result.search_result);
+											 loadcurpage((obj.limit>max_num? max_num: obj.limit),search_result_first.search_result);
 											//ajax
 //											console.log(obj.curr*5);
+											 //构建显示页数请求的json对象（obj.curr为下次显示的页数）
 											search_JSON = {
 													"key": key,
 													"search_item": search_item,
@@ -280,21 +336,24 @@ function searchBook() {
 												};
 											search_String = JSON.stringify(search_JSON);
 											$.ajax({
-												url: "sendmessage.php",
+												url: "user/sendmessage.php",
 												method: "post",
 												data: search_String,
 												before: function(){
 													
 												},
-												success: function(result_2){
-													result_2 = JSON.parse(result_2);	
-//													console.log(result_2);
-													loadcurpage((obj.limit>max_num? max_num: obj.limit),result_2.search_result);
+												success: function(search_result_next){
+													if(search_result_next){
+														search_result_next = JSON.parse(search_result_next);	
+	//													console.log(result_2);
+														loadcurpage((obj.limit>max_num? max_num: obj.limit),search_result_next.search_result);
+													}
 												}
-											})
+											});
 										}
-									});
-							});
+								});
+						});
+					}
 				},
 				error: function(){
 					console.log("error");
@@ -302,6 +361,7 @@ function searchBook() {
 		})
 	}
 };
+//分页加载查询期刊结果
 function loadcurpage(limit, search_result){
 //	console.log("limit is "+limit)
 	// //得到每页显示的条数
@@ -320,14 +380,15 @@ function loadcurpage(limit, search_result){
 				+ "</td id='remain-number'><td>"
 				+ search_result[i].number
 				+ "</td><td>";
-			if (search_result[i].number == 0 || search_result[i].borrowed == "true") {
+			if (search_result[i].number == 0) {
 				$(
-					data + "<a href='#' class='btn btn-primary disabled'>已借阅</a></td></tr>").appendTo($("#search-result-tbody"));
+					data + "<a href='#' class='btn btn-primary disabled'>暂无库存</a></td></tr>").appendTo($("#search-result-tbody"));
 			} else {
 				$(
 					data+ "<a href='#' class='borrow_periodical btn btn-primary' data-toggle='modal' data-target='#borrow-book'>借阅</a></td></tr>").appendTo($("#search-result-tbody"));
 			}
 			
+//			search_result[i].borrowed == "true"
 			$(".borrow_periodical").click(function (){
 				var current_Btn = $(this);
 				var borrow_send_data ={
@@ -340,9 +401,9 @@ function loadcurpage(limit, search_result){
 				$(".modal-body").text("您是否要借阅书籍：" + $(this).parent().parent().children(".borrow_table_periodicalName").text());
 				
 						$("#borrow_confirm").click(function(){
-							console.log("ajax");
+//							console.log("ajax");
 							$.ajax({
-							url: "sendmessage.php",
+							url: "user/sendmessage.php",
 							method: "post",
 							data: JSON.stringify(borrow_send_data),
 							before: function(){

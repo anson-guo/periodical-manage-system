@@ -68,7 +68,7 @@ public class BorrowDao {
 		return jsonArray;
 	}
 	//归还图书
-	public void returnPeriodical( String readerID, String periodicalID) {
+	public boolean returnPeriodical( String readerID, String periodicalID) {
 		Date nowtime = new Date();
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Connection con=cd.getConnection();
@@ -86,9 +86,11 @@ public class BorrowDao {
 			pstmt.executeUpdate();
 		}catch(SQLException e) {
 			e.printStackTrace();
+			return false;
 		}finally {
 			cd.cloesConnection(null, pstmt, con);
 		}
+			return true;
 	}
 	//显示历史借阅
 	public JSONArray historylist(String readerID) {
@@ -182,9 +184,9 @@ public class BorrowDao {
 //				System.out.println(sql);
 				ResultSet rs2 = pstmt2.executeQuery();
 				if(rs2.next()) {
-//					System.out.println("KEY_PID is " + searchMap.get(KEY_PID)+" "+ readerID);
-//					System.out.println("rs.getString is "+rs.getString(1));
-					if(rs2.getString(1).equals("1")) {
+					System.out.println("KEY_PID is " + searchMap.get(KEY_PID)+" "+ readerID);
+					System.out.println("rs.getString is "+rs.getString(1));
+					if(rs2.getString(1).equals("0")) {
 //						System.out.println("true");
 						searchMap.put("borrowed", "true");
 					}else {
@@ -206,7 +208,7 @@ public class BorrowDao {
 		return return_json;
 	}
 	//借阅图书
-	public void borrowPeriodical(String readerID, String periodicalID) {
+	public boolean borrowPeriodical(String readerID, String periodicalID) {
 		Connection con = cd.getConnection();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -248,9 +250,10 @@ public class BorrowDao {
 			}
 		}catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}finally {
 			cd.cloesConnection(rs,pstmt, con);
 		}
-		System.out.println("end borrowperiodical----------------------");
+		return true;
 	}
 }
