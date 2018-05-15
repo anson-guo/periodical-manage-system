@@ -36,6 +36,7 @@ public class ReaderDao {
 		//数据库
 		String psw = null;
 		String sql = "select " + KEY_ID + "," + KEY_PD + " from " + TABLE_R +  " where " + KEY_ID + "=?;";
+//		String sql = "select " + KEY_ID + "," + KEY_PD + " from " + TABLE_R +  " where " + KEY_NAME +"='郭逢枭' and "+KEY_ID + "=?;";
 		Connection con = cd.getConnection();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -44,7 +45,6 @@ public class ReaderDao {
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, readerID);
 			rs = pstmt.executeQuery();
-//			System.out.println(sql);
 			if(rs.next()) {
 //				System.out.println(rs.getString("readerPD"));
 				psw = rs.getString(2);
@@ -65,11 +65,15 @@ public class ReaderDao {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql = "select "+ KEY_NAME +","+ KEY_DP + "," + KEY_RT+ "," + KEY_SEX +
-				" from " + TABLE_R + " where " + KEY_ID + "=?";
+				" from " + TABLE_R + 
+				" where " + KEY_ID + "=?";
+//		String sql = "select "+ KEY_NAME +","+ KEY_DP + "," + KEY_RT+ "," + KEY_SEX +
+//		" from " + TABLE_R + " where " + KEY_ID + "=? and readerName='郭逢枭'";
 		try {
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, readerID);
 			rs = pstmt.executeQuery();
+			System.out.println("readerinfo : "+sql);
 			if(rs.next()) {
 				temp_reader.setReaderID(readerID);
 				temp_reader.setReaderName(rs.getString(1));

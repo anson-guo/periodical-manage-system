@@ -105,9 +105,17 @@ public class UserpageServlet extends HttpServlet {
 				else if(jsonin.getString("message").equals("search")) {
 					
 					jsonout = bd.searchlist(jsonin.getString("key"), jsonin.getString("search_item"),jsonin.getString("page"), readerID);
-					System.out.println(jsonout.toString());
+					System.out.println("search return :"+jsonout.toString());
 					resp.getWriter().write(jsonout.toString());
 					return ;
+				}
+				//
+				else if(jsonin.getString("message").equals("willborrowlist")) {
+					System.out.println("willborrowlist -----------------");
+					System.out.println("jsonin : " + jsonin.toString());
+					JSONArray jsonArrayout = bd.returnBorrowlist(jsonin.getString("periodicalName"), jsonin.getString("issue"), readerID);
+					System.out.println("willborrowlist : "+jsonArrayout.toString());
+					resp.getWriter().write(jsonArrayout.toString());
 				}
 				//借阅功能
 				if(jsonin.getString("message").equals("borrow_periodical")) {

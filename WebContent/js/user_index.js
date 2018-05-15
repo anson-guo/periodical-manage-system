@@ -309,7 +309,7 @@ function searchBook() {
 						let $search_result_node = $("#search-result-table");
 						if ($($search_result_node).children().length == 0) {
 							$($search_result_node).append(
-								"<thead><tr>" + "<th>期刊名</th>" + "<th>出版社</th>"
+								"<thead><tr>" + "<th>期号</th>" +"<th>期刊名</th>" + "<th>出版社</th>"
 								+ "<th>可借数量</th>" + "<th>操作</th></tr></thead>");
 						}
 						$("<tbody id='search-result-tbody'></tbody>").appendTo($search_result_node);
@@ -334,6 +334,7 @@ function searchBook() {
 													"page": obj.curr*5,
 													"message": "search"
 												};
+											console.log("page : "+search_JSON.page);
 											search_String = JSON.stringify(search_JSON);
 											$.ajax({
 												url: "user/sendmessage.php",
@@ -343,7 +344,7 @@ function searchBook() {
 													
 												},
 												success: function(search_result_next){
-													if(search_result_next){
+													if(search_result_next != null){
 														search_result_next = JSON.parse(search_result_next);	
 	//													console.log(result_2);
 														loadcurpage((obj.limit>max_num? max_num: obj.limit),search_result_next.search_result);
@@ -373,53 +374,69 @@ function loadcurpage(limit, search_result){
 		if (search_result[i] == null || search_result[i] == undefined) {
 			break;
 		} else {
-			let data =  "<tr><td class='borrow_table_periodicalName'>"
+			let data =  "<tr><td class='willborrow_issue'>"+ search_result[i].issue
+				+ "</td><td class='willborrow_periodicalName'>"
 				+ search_result[i].periodicalName
 				+ "</td><td>"
 				+ search_result[i].press
-				+ "</td id='remain-number'><td>"
+				+ "</td><td>"
 				+ search_result[i].number
 				+ "</td><td>";
-			if (search_result[i].number == 0) {
-				$(
-					data + "<a href='#' class='btn btn-primary disabled'>暂无库存</a></td></tr>").appendTo($("#search-result-tbody"));
-			} else {
-				$(
-					data+ "<a href='#' class='borrow_periodical btn btn-primary' data-toggle='modal' data-target='#borrow-book'>借阅</a></td></tr>").appendTo($("#search-result-tbody"));
-			}
+				$(data+ "<a href='#' class='borrow_periodical btn btn-primary' data-toggle='modal' data-target='#borrow-book'>借阅</a></td></tr>").appendTo($("#search-result-tbody"));
 			
 //			search_result[i].borrowed == "true"
+			//点击搜索界面的借阅按钮
 			$(".borrow_periodical").click(function (){
 				var current_Btn = $(this);
 				var borrow_send_data ={
-						"periodicalID": $(this).parent().parent().children(".borrow_table_periodicalID").text(),
-						"message": "borrow_periodical"
+						"issue": current_Btn.parent().parent().children('.willborrow_issue').text(),
+						"periodicalName": current_Btn.parent().parent().children('.willborrow_periodicalName').text(),
+						"message": "willborrowlist"
 						};
 				console.log(borrow_send_data);
-				
-				// 显示在模态框中
-				$(".modal-body").text("您是否要借阅书籍：" + $(this).parent().parent().children(".borrow_table_periodicalName").text());
-				
-						$("#borrow_confirm").click(function(){
-//							console.log("ajax");
-							$.ajax({
-							url: "user/sendmessage.php",
-							method: "post",
-							data: JSON.stringify(borrow_send_data),
-							before: function(){
-								
-							},
-							success: function(){
-								
-							},
-							error: function(){
-								
-							}
-						});
-							// 改为”已借阅“
-							current_Btn.addClass("disabled").text("已借阅");
+				$.ajax({
+					url: "user/sendmessage.php",
+					method: "post",
+					data: JSON.stringify(borrow_send_data),
+					before: function(){
+						
+					},
+					success: function(willborrowlist_result){
+						if(willborrowlist_result != null){
+							var willborrowlist_result = JSON.parse(willborrowlist_result);	
+							console.log(willborrowlist_result);
 							
-						});
+							$("<table id='select-periodical' class='table table-hover'></table").appendTo(".modal-body");	
+							
+							$("#select-periodical").empty();
+							
+							for(let i = 0; i < willborrowlist_result.length; i++) {
+								console.log("here:" + i + " :" + willborrowlist_result[i].periodicalName);
+								let data = "<tr>" + 
+								    "<td>" + willborrowlist_result[i].issue + "</td>" + 
+									"<td>" + willborrowlist_result[i].periodicalName + "</td>" +
+									"<td>" + willborrowlist_result[i].periodicalID + "</td>" + 
+									"<td>" + "<a class='comfir_borrow btn btn-primary'>借阅</a>"+ "</td>" + 
+									"</tr>";
+								$("#select-periodical").append($(data));
+								//点击弹出框的借阅按钮
+								$(".comfir_borrow").click(function(){
+									
+								});
+							}
+						}
+					}
+				});
+				/* update 2018-5-15 pm */
+				// 1. 点击借阅 发送数据请求，弹出模态框
+				
+				
+				// 模态框中展示要要借阅的书籍
+				
+				
+				
+				
+				
 
 			});
 		}

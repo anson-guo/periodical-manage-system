@@ -5,8 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.nine.util.BorrowElement;
@@ -19,6 +21,7 @@ public class BorrowDao {
 	private final String TABLE_P = "periodicalstb";
 	private final String KEY_RID = "readerID";
 	private final String KEY_PID = "periodicalID";
+	private final String KEY_ISSUE = "issue";
 	private final String KEY_PNAME = "periodicalName";
 	private final String KEY_PRESS = "press";
 	private final String KEY_BDATE = "beginDate";
@@ -132,20 +135,59 @@ public class BorrowDao {
 		Connection con = cd.getConnection();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		
+		JSONObject jsonObject = null;
 		JSONObject return_json = new JSONObject();
+		JSONArray jsonArray = new JSONArray();
 		int listcount = 0;
-		String  sql = "select " + KEY_PNAME +"," + KEY_PRESS+"," + "count(2) as count" +
-				" from "+ TABLE_P +
-				" where "+search_item+" like ? group by " + KEY_PNAME +", "+ KEY_PRESS;
-		
+//		select count(1) from 
+//		(select  issue, periodicalName, press
+//		from periodicalstb
+//		where press like '%115%'
+//		group by issue,periodicalName, press) t
+		//获取总页数
+		String sql ="select count(1) from ("+
+		"select " + KEY_ISSUE +"," +KEY_PNAME +"," + KEY_PRESS+"," + "count(2) as count" +
+		" from "+ TABLE_P +
+		" where "+search_item+" like ? "
+		+ "group by " + KEY_ISSUE +", " +KEY_PNAME +", "+ KEY_PRESS +
+		") t";
 		try {
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, "%"+key+"%");
 			rs = pstmt.executeQuery();
 			//计数
+			if(rs.next()) {
+				listcount = rs.getInt(1);
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			cd.cloesConnection(rs, pstmt, con);
+		}
+//		select issue,periodicalName, press, count(2) as count
+//		from periodicalstb
+//		where press like '%115%'
+//		group by issue,periodicalName, press;
+		sql = "select " + KEY_ISSUE +"," +KEY_PNAME +"," + KEY_PRESS+"," + "count(2) as count" +
+				" from "+ TABLE_P +
+				" where "+search_item+" like ? "
+				+ "group by " + KEY_ISSUE +", " +KEY_PNAME +", "+ KEY_PRESS+
+				" limit "+ (Integer.parseInt(endcount)-5<0?0:Integer.parseInt(endcount)-5) + "," + (Integer.parseInt(endcount)-listcount>0?listcount:Integer.parseInt(endcount));
+		
+		try {
+			con = cd.getConnection();
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, "%"+key+"%");
+			rs = pstmt.executeQuery();
+			//计数
 			while(rs.next()) {
-				listcount ++;
+				Map<String,String> searchMap = new HashMap<String,String>();
+				searchMap.put(KEY_ISSUE,rs.getString(1));
+				searchMap.put(KEY_PNAME,rs.getString(2));
+				searchMap.put(KEY_PRESS,rs.getString(3));
+				searchMap.put("number",rs.getString(4));
+				jsonObject = JSONObject.fromObject(searchMap);
+				jsonArray.add(jsonObject);
 			}
 		}catch (SQLException e) {
 			e.printStackTrace();
@@ -153,59 +195,115 @@ public class BorrowDao {
 			cd.cloesConnection(rs, pstmt, con);
 		}
 		return_json.put("listcount", listcount);
-		
+		return_json.put("search_result", jsonArray);
+		return return_json;
+	}
 //		select periodicalID, periodicalName, press, count(2) as count from periodicalstb
 //		where periodicalName like '%世界%'
 //		group by periodicalName;
-		sql = "select " + KEY_PNAME +"," + KEY_PRESS+"," + "count(2) as count" +
-					" from "+ TABLE_P +
-					" where "+search_item+" like ? group by " + KEY_PNAME +", "+ KEY_PRESS +
-					" limit "+ (Integer.parseInt(endcount)-5 < 0? 0 : Integer.parseInt(endcount)-5) + "," + (Integer.parseInt(endcount) > listcount ? listcount: Integer.parseInt(endcount));
-		System.out.println("list : "+sql);
-		JSONObject jsonObject = null;
+//		sql = "select " + KEY_PNAME +"," + KEY_PRESS+"," + "count(2) as count" +
+//					" from "+ TABLE_P +
+//					" where "+search_item+" like ? group by " + KEY_PNAME +", "+ KEY_PRESS +
+//					" limit "+ (Integer.parseInt(endcount)-5 < 0? 0 : Integer.parseInt(endcount)-5) + "," + (Integer.parseInt(endcount) > listcount ? listcount: Integer.parseInt(endcount));
+//		System.out.println("list : "+sql);
+//		JSONObject jsonObject = null;
+//		JSONArray jsonArray = new JSONArray();
+//		Map<String,String> searchMap = new HashMap<String,String>();
+//		
+//		try {
+//			con = cd.getConnection();
+//			pstmt = con.prepareStatement(sql);
+//			pstmt.setString(1, "%"+key+"%");
+//			rs = pstmt.executeQuery();
+//			while(rs.next()) {
+//				searchMap.put(KEY_PNAME,rs.getString(1));
+//				searchMap.put(KEY_PRESS,rs.getString(2));
+//				searchMap.put("number",rs.getString(3));
+////				select count(1) from borrowtb where periodicalID='115N000120170101' and readerID='20150101' and endDate = '0000-00-00';
+//				String sql2 = "select count(1) from "+TABLE_B+" where "+KEY_PID+"=? and "+KEY_RID+"=? and "+ KEY_EDATE+"='0000-00-00'";
+//				Connection con2 = cd.getConnection();
+//				PreparedStatement pstmt2 = con.prepareStatement(sql2);
+//				pstmt2.setString(1, searchMap.get(KEY_PID));
+//				pstmt2.setString(2, readerID);
+////				System.out.println(sql);
+//				ResultSet rs2 = pstmt2.executeQuery();
+//				if(rs2.next()) {
+//					System.out.println("KEY_PID is " + searchMap.get(KEY_PID)+" "+ readerID);
+//					System.out.println("rs.getString is "+rs.getString(1));
+//					if(rs2.getString(1).equals("0")) {
+////						System.out.println("true");
+//						searchMap.put("borrowed", "true");
+//					}else {
+////						System.out.println("false");
+//						searchMap.put("borrowed", "false");
+//					}
+//				}
+//				cd.cloesConnection(rs2, pstmt2, con2);
+//				jsonObject = JSONObject.fromObject(searchMap);
+//				jsonArray.add(jsonObject);
+//			}
+//		}catch (SQLException e) {
+//			e.printStackTrace();
+//		}finally {
+//			cd.cloesConnection(rs,pstmt, con);
+//		}
+//		
+//		return_json.put("search_result", jsonArray);
+//		return return_json;
+	public JSONArray returnBorrowlist(String periodicalName, String issue, String readerID) {
+		Connection con = cd.getConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		JSONArray jsonArray = new JSONArray();
-		Map<String,String> searchMap = new HashMap<String,String>();
-		
+		List list = new ArrayList();
+//		select periodicalID,issue,periodicalName
+//		from periodicalstb
+//		where issue='201801' and periodicalName='互联网天地';
+		String sql="select "+KEY_PID+","+KEY_ISSUE+","+KEY_PNAME+
+				" from "+ TABLE_P +
+				" where "+ KEY_PNAME+"=? and "+ KEY_ISSUE+"=?";
 		try {
-			con = cd.getConnection();
 			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, "%"+key+"%");
+			pstmt.setString(1, periodicalName);
+			pstmt.setString(2, issue);
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
-				searchMap.put(KEY_PNAME,rs.getString(1));
-				searchMap.put(KEY_PRESS,rs.getString(2));
-				searchMap.put("number",rs.getString(3));
-//				select count(1) from borrowtb where periodicalID='115N000120170101' and readerID='20150101' and endDate = '0000-00-00';
-				String sql2 = "select count(1) from "+TABLE_B+" where "+KEY_PID+"=? and "+KEY_RID+"=? and "+ KEY_EDATE+"='0000-00-00'";
-				Connection con2 = cd.getConnection();
-				PreparedStatement pstmt2 = con.prepareStatement(sql2);
-				pstmt2.setString(1, searchMap.get(KEY_PID));
-				pstmt2.setString(2, readerID);
-//				System.out.println(sql);
-				ResultSet rs2 = pstmt2.executeQuery();
-				if(rs2.next()) {
-					System.out.println("KEY_PID is " + searchMap.get(KEY_PID)+" "+ readerID);
-					System.out.println("rs.getString is "+rs.getString(1));
-					if(rs2.getString(1).equals("0")) {
-//						System.out.println("true");
-						searchMap.put("borrowed", "true");
-					}else {
-//						System.out.println("false");
-						searchMap.put("borrowed", "false");
-					}
-				}
-				cd.cloesConnection(rs2, pstmt2, con2);
-				jsonObject = JSONObject.fromObject(searchMap);
-				jsonArray.add(jsonObject);
+				System.out.println(rs.getString(1));
+				Map<String,String> willborrow = new HashMap<String,String>();
+				willborrow.put(KEY_PID, rs.getString(1));
+				willborrow.put(KEY_ISSUE, rs.getString(2));
+				willborrow.put(KEY_PNAME, rs.getString(3));
+				willborrow.put("borrowed", "false");
+
+				list.add(willborrow);
 			}
+			cd.cloesConnection(rs, pstmt, con);
+//			select periodicalID,readerID,endDate
+//			from borrowtb
+//			where periodicalID='161' and readerID='2015110305';
+//			String sql2 = "select "+KEY_PID+","+KEY_RID+","+KEY_EDATE+
+//							" from "+TABLE_B+
+//							" where "+KEY_PID+"=? and "+ KEY_RID+"=? ";
+//			ComDao cd2 = new ComDao();
+//			Connection con2 = cd2.getConnection();
+//			PreparedStatement pstmt2 = con.prepareStatement(sql2);
+			System.out.println("get : "+list.get(0));
+//			pstmt2.setString(1, jsonArray.get(1));
+//			pstmt2.setString(2, readerID);
+//			ResultSet rs2 = pstmt2.executeQuery();
+//			if(rs.next()) {
+//				willborrow.put("borrowed", "true");
+//			}
+//			else {
+//				willborrow.put("borrowed", "false");
+//			}
+//			cd.cloesConnection(rs2, pstmt2, con2);
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
-			cd.cloesConnection(rs,pstmt, con);
+			cd.cloesConnection(rs, pstmt, con);
 		}
-		
-		return_json.put("search_result", jsonArray);
-		return return_json;
+		return jsonArray;
 	}
 	//借阅图书
 	public boolean borrowPeriodical(String readerID, String periodicalID) {
