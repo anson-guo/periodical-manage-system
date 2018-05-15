@@ -382,11 +382,11 @@ function loadcurpage(limit, search_result){
 				+ "</td><td>"
 				+ search_result[i].number
 				+ "</td><td>";
-				$(data+ "<a href='#' class='borrow_periodical btn btn-primary' data-toggle='modal' data-target='#borrow-book'>借阅</a></td></tr>").appendTo($("#search-result-tbody"));
+				$(data+ "<a href='#' class='borrow_periodical_btn btn btn-primary' data-toggle='modal' data-target='#borrow-book'>借阅</a></td></tr>").appendTo($("#search-result-tbody"));
 			
 //			search_result[i].borrowed == "true"
 			//点击搜索界面的借阅按钮
-			$(".borrow_periodical").click(function (){
+			$(".borrow_periodical_btn").click(function (){
 				var current_Btn = $(this);
 				var borrow_send_data ={
 						"issue": current_Btn.parent().parent().children('.willborrow_issue').text(),
@@ -416,12 +416,36 @@ function loadcurpage(limit, search_result){
 								    "<td>" + willborrowlist_result[i].issue + "</td>" + 
 									"<td>" + willborrowlist_result[i].periodicalName + "</td>" +
 									"<td>" + willborrowlist_result[i].periodicalID + "</td>" + 
-									"<td>" + "<a class='comfir_borrow btn btn-primary'>借阅</a>"+ "</td>" + 
+									"<td>" + "<button class='comfir_borrow_btn btn btn-primary"+(willborrowlist_result[i].borrowed=="true"?" disabled":"")+"'>借阅</button>"+ "</td>" + 
 									"</tr>";
 								$("#select-periodical").append($(data));
 								//点击弹出框的借阅按钮
-								$(".comfir_borrow").click(function(){
-									
+								$(".comfir_borrow_btn").click(function(){
+									var comfir_borrow_btn = $(this);
+									var borrow_periodicalID = $(this).parent().prev().text();
+									var borrow_periodical_JSON = {
+											"borrow_periodicalID": borrow_periodicalID,
+											"message":"borrow_periodical"
+									}
+									$.ajax({
+										url: "user/sendmessage.php",
+										method: "post",
+										data: JSON.stringify(borrow_periodical_JSON),
+										before: function(){
+											
+										},
+										success: function(borrow_periodical_result){
+											borrow_periodical_result = JSON.parse(borrow_periodical_result);
+											console.log("借阅"+borrow_periodical_result.istrue);
+											if(borrow_periodical_result.istrue){
+//												console.log("if is true");
+												comfir_borrow_btn.attr("disabled",true);
+											}
+										},
+										error: function(){
+											
+										}
+									})
 								});
 							}
 						}

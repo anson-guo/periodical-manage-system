@@ -43,7 +43,11 @@ $(function () {
 					$("#inputPassword").val("");
 					$(".form-signin").submit();
         		}else{
-        			
+        			$("#inputPassword").val("");
+        			bootbox.alert("密码或用户名失败");
+        			slider.reset();
+        			slider.init();
+        			$("#btn_login").addClass("hidden");
         		}
         	},
         	error: function(){

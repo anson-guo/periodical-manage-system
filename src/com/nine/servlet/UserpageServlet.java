@@ -105,7 +105,7 @@ public class UserpageServlet extends HttpServlet {
 				else if(jsonin.getString("message").equals("search")) {
 					
 					jsonout = bd.searchlist(jsonin.getString("key"), jsonin.getString("search_item"),jsonin.getString("page"), readerID);
-					System.out.println("search return :"+jsonout.toString());
+//					System.out.println("search return :"+jsonout.toString());
 					resp.getWriter().write(jsonout.toString());
 					return ;
 				}
@@ -121,7 +121,7 @@ public class UserpageServlet extends HttpServlet {
 				if(jsonin.getString("message").equals("borrow_periodical")) {
 //					System.out.println("borrow_periodical :"+jsonin.toString());
 					jsonout = new JSONObject();
-					jsonout.put("istrue",bd.borrowPeriodical(readerID, jsonin.getString("periodicalID")));
+					jsonout.put("istrue",bd.borrowPeriodical(readerID, jsonin.getString("borrow_periodicalID")));
 					resp.getWriter().write(jsonout.toString());
 					return ;
 				}

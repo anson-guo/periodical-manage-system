@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.nine.util.BorrowElement;
+import com.nine.util.WillBorrow;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -46,7 +46,7 @@ public class BorrowDao {
 			pstmt = con.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
-				BorrowElement bElement = new BorrowElement();
+				WillBorrow bElement = new WillBorrow();
 //				System.out.println(rs.getString(1));
 				borrowMap.put("periodicalID",rs.getString(1));
 //				System.out.println(rs.getString(2));
@@ -255,7 +255,7 @@ public class BorrowDao {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		JSONArray jsonArray = new JSONArray();
-		List list = new ArrayList();
+		List<WillBorrow> list = new ArrayList<WillBorrow>();
 //		select periodicalID,issue,periodicalName
 //		from periodicalstb
 //		where issue='201801' and periodicalName='互联网天地';
@@ -268,41 +268,48 @@ public class BorrowDao {
 			pstmt.setString(2, issue);
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
-				System.out.println(rs.getString(1));
-				Map<String,String> willborrow = new HashMap<String,String>();
-				willborrow.put(KEY_PID, rs.getString(1));
-				willborrow.put(KEY_ISSUE, rs.getString(2));
-				willborrow.put(KEY_PNAME, rs.getString(3));
-				willborrow.put("borrowed", "false");
-
+//				System.out.println(rs.getString(1));
+				WillBorrow willborrow = new WillBorrow();
+				willborrow.setPeriodicalID(rs.getString(1));
+				willborrow.setIssue(rs.getString(2));
+				willborrow.setPeriodicalName(rs.getString(3));
+				willborrow.setBorrowed("false");
 				list.add(willborrow);
 			}
 			cd.cloesConnection(rs, pstmt, con);
 //			select periodicalID,readerID,endDate
 //			from borrowtb
 //			where periodicalID='161' and readerID='2015110305';
-//			String sql2 = "select "+KEY_PID+","+KEY_RID+","+KEY_EDATE+
-//							" from "+TABLE_B+
-//							" where "+KEY_PID+"=? and "+ KEY_RID+"=? ";
-//			ComDao cd2 = new ComDao();
-//			Connection con2 = cd2.getConnection();
-//			PreparedStatement pstmt2 = con.prepareStatement(sql2);
-			System.out.println("get : "+list.get(0));
-//			pstmt2.setString(1, jsonArray.get(1));
-//			pstmt2.setString(2, readerID);
-//			ResultSet rs2 = pstmt2.executeQuery();
-//			if(rs.next()) {
-//				willborrow.put("borrowed", "true");
-//			}
-//			else {
-//				willborrow.put("borrowed", "false");
-//			}
-//			cd.cloesConnection(rs2, pstmt2, con2);
+			for (int i =0; i<list.size(); i++){
+				String sql2 = "select count(1) as count,"+KEY_EDATE+
+								" from "+TABLE_B+
+								" where "+KEY_PID+"=? and "+ KEY_RID+"=? ";
+				ComDao cd2 = new ComDao();
+				Connection con2 = cd2.getConnection();
+				PreparedStatement pstmt2 = con2.prepareStatement(sql2);
+				
+				pstmt2.setString(1, list.get(i).getPeriodicalID());
+				pstmt2.setString(2, readerID);
+				ResultSet rs2 = pstmt2.executeQuery();
+				if(rs2.next()) {
+					System.out.println("get : "+list.get(i).getPeriodicalID());
+					System.out.println("count "+rs2.getString(1)+"end "+ (rs2.getDate(2)==null));
+					if (rs2.getString(1).equals("1") && rs2.getDate(2)==null) {
+						System.out.println("ture");
+						list.get(i).setBorrowed("true");
+					}else {
+						System.out.println("false");
+						list.get(i).setBorrowed("false");
+					}
+				}
+				cd.cloesConnection(rs2, pstmt2, con2);
+			}
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
 			cd.cloesConnection(rs, pstmt, con);
 		}
+		jsonArray = JSONArray.fromObject(list);
 		return jsonArray;
 	}
 	//借阅图书
@@ -323,8 +330,8 @@ public class BorrowDao {
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
 				if(rs.getInt(1) == 0) {
-//					insert into borrowtb(readerID, periodicalID, beginDate,endDate) values('20150101','115N000120170101','2017-05-12','0');
-					sql = "insert into "+TABLE_B +"("+KEY_RID+", "+KEY_PID+", "+KEY_BDATE+", "+KEY_EDATE+ ") values(?,?,?,'0000-00-00')";
+//					insert into borrowtb(readerID, periodicalID, beginDate,endDate) values('20150101','115N000120170101','2017-05-12',null);
+					sql = "insert into "+TABLE_B +"("+KEY_RID+", "+KEY_PID+", "+KEY_BDATE+", "+KEY_EDATE+ ") values(?,?,?,null)";
 //					System.out.println(sql);
 					cd.cloesConnection(rs, pstmt, con);
 					con = cd.getConnection();
@@ -334,8 +341,8 @@ public class BorrowDao {
 					pstmt.setString(3, df.format(nowtime));
 					
 				}else {
-//					update borrowtb set beginDate='2018-05-12', endDate='0000-00-00' where readerID='20150101' and periodicalID='115N000320170101';
-					sql = "update "+ TABLE_B + " set " + KEY_BDATE +"=?, "+ KEY_EDATE +"='0000-00-00' where " + KEY_RID + "=? and " + KEY_PID + "=?";
+//					update borrowtb set beginDate='2018-05-12', endDate=null where readerID='20150101' and periodicalID='115N000320170101';
+					sql = "update "+ TABLE_B + " set " + KEY_BDATE +"=?, "+ KEY_EDATE +"=null where " + KEY_RID + "=? and " + KEY_PID + "=?";
 //					System.out.println(sql);
 					cd.cloesConnection(rs, pstmt, con);
 					con = cd.getConnection();
