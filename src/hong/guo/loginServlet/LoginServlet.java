@@ -1,4 +1,4 @@
-package com.nine.servlet;
+package hong.guo.loginServlet;
 
 import java.io.*;
 
@@ -9,8 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.nine.Dao.ReaderDao;
-
+import hong.guo.loginDao.UserDao;
 import net.sf.json.JSONObject;
 
 public class LoginServlet extends HttpServlet {
@@ -26,27 +25,26 @@ public class LoginServlet extends HttpServlet {
 	}
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		ReaderDao ud = new ReaderDao();
+		UserDao ud = new UserDao();
 		req.setCharacterEncoding("utf-8");
-		String idnumber = req.getParameter("idnumber");
+		String username = req.getParameter("username");
 		String password = req.getParameter("password");
-//		System.out.println(username);
-		String pwd = ud.findUser(idnumber);
+		System.out.println(username);
+		String pwd = ud.findUser(username);
 		if (pwd == null ) {
-			req.setAttribute("readerID", idnumber);
+			req.setAttribute("username", username);
 			req.setAttribute("message", "用户不存在");
 			req.getRequestDispatcher("login.jsp").forward(req, resp);
 		}
 		else if (!pwd.equals(password)) {
-			req.setAttribute("readerID", idnumber);
+			req.setAttribute("username", username);
 			req.setAttribute("message", "密码不正确");
 			req.getRequestDispatcher("login.jsp").forward(req, resp);
 		}
 		else {
-//			System.out.println("user is ok");
-			req.getSession().setAttribute("readerID", idnumber);
-			System.out.println(req.getSession().getAttribute("readerID")+" end login");
-			resp.sendRedirect("user_index.html");
+			System.out.println("user is ok");
+			req.getSession().setAttribute("username", username);
+			req.getRequestDispatcher("user_index.html").forward(req, resp);
 		}
 			
 	}
