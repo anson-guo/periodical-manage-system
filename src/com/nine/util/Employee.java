@@ -1,6 +1,6 @@
 package com.nine.util;
 
-public class employee {
+public class Employee {
 	private String employeeID;
 	private String employeeName;
 	private String sex;

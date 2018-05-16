@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>管理员</title>
+  <!-- Bootstrap core CSS -->
+  <link href="./css/bootstrap.min.css" rel="stylesheet">
+  <!-- layui -->
+  <link rel="stylesheet" href="./css/layui.css">
+
+  <!-- 页面样式 -->
+  <link href="./css/manager_index.css" rel="stylesheet">
+
+  <!-- jQuery -->
+  <script src="./js/jquery-3.2.1.min.js"></script>
+  <!-- bootstrap -->
+  <script src="./js/bootstrap.min.js"></script>
+  <!-- Validate -->
+  <script src="./js/jquery.validate.js"></script>
+  <!-- bootbox -->
+  <script src="./js/bootbox.min.js"></script>
+  <!-- layui -->
+  <script src="./js/layui.js"></script>
+</head>
+
+<body>
+
+  <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="javascript:;">
+      <span class="welcome-u">欢迎您： </span>
+      <span id="manager"></span>
+    </a>
+    <!-- <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
+    <ul class="navbar-nav px-3">
+
+      <li class="nav-item text-nowrap">
+        <a class="nav-link" href="./login.html">退出系统</a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+        <div class="sidebar-sticky">
+          <ul class="nav flex-column my-nav">
+            <li class="nav-item" id="menu-item">
+              <a class="nav-link" href="javascript:;">
+                <span data-feather="home"></span>
+                管理员主页
+              </a>
+            </li>
+            <li class="nav-item" id="menu-item">
+              <a class="nav-link" href="javascript:;">
+                <span data-feather="shopping-cart"></span>
+                读者管理
+              </a>
+            </li>
+            <li class="nav-item" id="menu-item">
+              <a class="nav-link" href="javascript:;">
+                <span data-feather="shopping-cart"></span>
+                登记期刊
+              </a>
+            </li>
+
+            <li class="nav-item" id="menu-item">
+              <a class="nav-link" href="javascript:;">
+                <span data-feather="users"></span>
+                期刊盘存
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- 管理员主页 -->
+      <main role="main" id="main-page" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+          <h1 class="h2">管理员主页</h1>
+        </div>
+
+        <div class="page-body">
+          <!-- 基本信息 包括头像和一些基本的用户信息 -->
+          <div class="basic-informaion clearfix">
+            <div class="head-logo fl">
+              <img src="img/login-head.jpg" alt="">
+            </div>
+            <div class="detail-information fl">
+              <p>
+                <label for="">姓名：</label>
+                <span id="name"></span>
+              </p>
+              <p>
+                <label for="">性别：</label>
+                <span id="sex"></span>
+              </p>
+              <p>
+                <label for="">职位：</label>
+                <span id="post"></span>
+              </p>
+              <p>
+                <label for="">职工号：</label>
+                <span id="employeeId"></span>
+              </p>
+            </div>
+          </div>
+
+          <div class="manager-main">
+            <ul class="nav nav-pills main-page-ul" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" data-toggle="pill" href="#home">近期消息</a>
+              </li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+              <div id="home" class="container tab-pane active">
+                <br>
+                <ul class="list-group">
+                  <li class="list-group-item">这里是近期消息列表</li>
+                  <li class="list-group-item">Second-这里是近期消息列表</li>
+                  <li class="list-group-item">Third-这里是近期消息列表</li>
+                </ul>
+              </div>
+            </div>
+      </main>
+
+      <!-- 读者管理 -->
+      <main role="main" id="search-book" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 hidden">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+          <h1 class="h2">读者管理</h1>
+        </div>
+        <div class="page-body">
+          <div class="manager-main">
+            <ul class="nav nav-pills main-page-ul" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" data-toggle="pill" href="#add-reader">添加读者</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" data-toggle="pill" href="#edit-reader">编辑读者</a>
+              </li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content">
+              <!-- 添加读者 -->
+              <div id="add-reader" class="container tab-pane active">
+                <form class="add-reader" id="add-reader-form" method="post">
+                  <table class="table table-bordered">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <label for="reader_id"> 借阅证号：</label>
+                        </td>
+                        <td>
+                          <input type="text" name="reader_id" id="reader_id">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <label for="reader_name">姓名：</label>
+                        </td>
+                        <td>
+                          <input type="text" name="reader_name" id="reader_name">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <label for="">性别：</label>
+                        </td>
+                        <td>
+                          <input type="radio" name="sex" id="male" value="男">
+                          <label for="male">男</label>
+                          <input type="radio" name="sex" id="female" value="女">
+                          <label for="female">女</label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <label for="">部门：</label>
+                        </td>
+                        <td id="selected">
+                          <select id="" name="department">
+                            <option value="请选择所属部门">请选择所属部门</option>
+                            <option value="研发部">研发部</option>
+                            <option value="人力资源部">人力资源部</option>
+                            <option value="市场部">市场部</option>
+                            <option value="后勤部">后勤部</option>
+                          </select>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <input type="submit" value="提交" class="btn btn-primary">
+                </form>
+
+              </div>
+              <!-- 编辑读者 -->
+              <div id="edit-reader" class="container tab-pane edit-reader">
+                <form class="form-inline">
+                  <input type="text" class="form-control" id="key" placeholder="请输入关键词">
+                  <button type="button" class="btn btn-primary" id="search-reader">查询</button>
+
+                  <label class="radio-inline">
+                    <input type="radio" name="search-reader" value="readerID" checked>借阅证号</label>
+                  <label class="radio-inline">
+                    <input type="radio" name="search-reader" value="readerName">姓名</label>
+                  <label class="radio-inline">
+                    <input type="radio" name="search-reader" value="department">部门</label>
+
+                </form>
+                <!-- 显示查询结果 -->
+                <div class="edit-reader-result">
+                  <table class="table table-hover search-result-table">
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+      </main>
+
+      <!-- 登记期刊 -->
+      <main role="main" id="search-book" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 hidden">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+          <h1 class="h2">登记期刊</h1>
+        </div>
+        <div class="page-body">
+           <!-- 方式一： -->
+          <button class="btn btn-primary method-btn" data-toggle="collapse" data-target="#demo">方式一：</button>
+         
+          <div class="cascading-drop-down collapse show" id="demo">
+
+            <form action="#" class="clearfix" id="method_01">
+              <select class="form-control" id="select_press">
+                <option value="">--- 出版社 ---</option>
+              </select>
+
+              <select class="form-control" id="select_preiodicalName">
+                <option value="">--- 期刊名 ---</option>
+              </select>
+
+              <select class="form-control" id="select_publicationCycle">
+                <option value="">--- 出版周期 ---</option>
+              </select>
+
+              <select class="form-control" id="select_period">
+                <option value="">--- 订购期数 ---</option>
+              </select>
+
+              <input type="text" name="select_number" id="select_number" min="0" class="" value="---数量---" readonly>
+              <button type="button" id="subtract">-</button>
+              <button type="button" id="add">+</button>
+
+              <input type="button" value="提交" class="btn btn-primary">
+            </form>
+          </div>
+
+          <!-- 方式二： -->
+          <button class="btn btn-primary method-btn" data-toggle="collapse" data-target="#demo_02">方式二：</button>
+         
+          <div class="order-periodical-table collapse" id="demo_02">
+
+            <form action="#" class="clearfix" id="method_02">
+                <table class="table table-bordered">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <label for="input_press">出版社：</label>
+                      </td>
+                        <td>
+                          <input type="text" name="input_press" id="input_press" class="form-control" required>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <label for="input_periodicalName">期刊名：</label>
+                        </td>
+                        <td>
+                          <input type="text" name="input_periodicalName" id="input_periodicalName"  class="form-control" required>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <label for="input_publicationCycle">出版周期：</label>
+                        </td>
+                        <td>
+                            <select id="input_publicationCycle" name="input_publicationCycle"  class="form-control">
+                                <option value="" >请选择出版周期</option>
+                              </select>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <label for="input_period">订购期数：</label>
+                        </td>
+                        <td>
+                            <select name="" id="input_period"  class="form-control">
+                              <option value="">请选择订购期数</option>
+                            </select>
+                        </td>
+                      </tr>
+                      <tr>
+                          <td>
+                            <label for="input_number">订购数量：</label>
+                          </td>
+                          <td>
+                              <input type="number" min="1" value="1" name="input_number" id="input_number"  class="form-control" required>
+                          </td>
+                        </tr>
+                    </tbody>
+                  </table>
+                  <input type="submit" value="提交" class="btn btn-primary">
+            </form>
+          </div>
+
+        </div>
+      </main>
+
+      <!-- 期刊盘存 -->
+      <main role="main" id="take-stock" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 hidden">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+          <h1 class="h2">期刊盘存</h1>
+        </div>
+        <div class="page-body">
+            <form class="form-inline" id="search-periodical">
+                <input type="text" class="form-control" id="key" placeholder="请输入关键词">
+                <button type="button" class="btn btn-primary" id="search-periodical_btn">查询</button>
+              
+                <label class="radio-inline">
+                  <input type="radio" name="search-periodical_item" value="periodical_id" checked>期刊号</label>
+                <label class="radio-inline">
+                  <input type="radio" name="search-periodical_item" value="periodical_name">期刊名</label>
+                <label class="radio-inline">
+                  <input type="radio" name="search-periodical_item" value="press">出版社</label>
+
+              </form>
+              <!-- 显示查询结果 -->
+              <div class="edit-reader-result">
+                <table class="table table-hover search-result-table">
+                </table>
+              </div>
+        </div>
+      </main>
+
+      </div>
+
+      <!-- Icons -->
+      <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+      <script>
+        feather.replace();
+      </script>
+
+      <!-- Graphs -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+
+
+      <!-- 测试JSON数据 
+      <script src="js/test_JSON_reader.js"></script>
+      <script src="js/test_JSON_jilian_list.js"></script>
+-->
+      <!-- import JS -->
+      <script src="js/manager_index.js"></script>
+
+</body>
+
+</html>

@@ -235,3 +235,14 @@ display: block;
   left: 0;
   top: 0;
 }
+
+/*弹出框*/
+#select-periodical tr td {
+	vertical-align: middle;
+}
+#select-periodical tr td a{
+	color: white;
+}
+
+
+

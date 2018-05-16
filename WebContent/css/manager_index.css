@@ -1,0 +1,384 @@
+body {
+  font-size: .875rem;
+}
+.hidden{
+	display:none;
+}
+.feather {
+  width: 16px;
+  height: 16px;
+  vertical-align: text-bottom;
+}
+/*
+ * Sidebar
+ */
+.sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100; /* Behind the navbar */
+  padding: 0;
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.sidebar-sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 48px; /* Height of navbar */
+  height: calc(100vh - 48px);
+  padding-top: .5rem;
+  overflow-x: hidden;
+  overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+}
+
+.sidebar .nav-link {
+  font-weight: 500;
+  color: #333;
+}
+
+.sidebar .nav-link .feather {
+  margin-right: 4px;
+  color: #999;
+}
+
+.sidebar .nav-link.active {
+  color: #007bff;
+}
+.nav li{
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  padding-left: 2rem;
+  /* position: absolute; */
+}
+/* .my-nav li a,
+.my-nav li a svg,{
+  color: black !important;
+} */
+.my-nav li:hover{
+  background: #007bff;
+}
+.sidebar-active{
+  background: #007bff; 
+}
+.my-nav li a svg{
+  position: relative;
+  top: -3px;
+}
+.my-nav li:hover a, 
+.my-nav li:hover svg{
+  color: white !important;
+}
+
+
+.sidebar .nav-link:hover .feather,
+.sidebar .nav-link.active .feather {
+  color: inherit;
+}
+
+.sidebar-heading {
+  font-size: .75rem;
+  text-transform: uppercase;
+}
+
+/*
+ * Navbar
+ */
+.navbar-brand {
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+  font-size: 1rem;
+  background-color: rgba(0, 0, 0, .25);
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+}
+
+.navbar .form-control {
+  padding: .75rem 1rem;
+  border-width: 0;
+  border-radius: 0;
+}
+
+.form-control-dark {
+  color: #fff;
+  background-color: rgba(255, 255, 255, .1);
+  border-color: rgba(255, 255, 255, .1);
+}
+
+.form-control-dark:focus {
+  border-color: transparent;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
+}
+.my-nav {
+  margin-top: 2rem;
+}
+.my-nav li {
+  padding-left: 3.5rem;
+}
+#menu-item{
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  text-align: left;
+}
+/*
+ * Utilities
+ */
+
+.border-top { border-top: 1px solid #e5e5e5; }
+.border-bottom { border-bottom: 1px solid #e5e5e5; }
+
+.hidden{
+  display: none;
+}
+.welcome-u{
+  font-size: 0.7rem !important;
+  /* color: gray; */
+}
+
+/* page-body */
+.clearfix:after,
+.clearfix:before{
+  content: "";
+  display: table;
+  clear: both;
+}
+.fl{
+  float: left;
+}
+.rl{
+  float: right;
+}
+
+.page-body{
+  width: 80%;
+  margin: 2rem auto;
+  /* border: 1px solid black; */
+  background: #f8f9fa;
+  padding: 2rem;
+  position: relative;
+}
+.head-logo{
+  margin-top: -18px;
+}
+.page-body form #key {
+  width: 80%;
+  margin-right: 2rem;
+}
+.page-body form {
+  margin-bottom: 2rem;
+}
+ 
+.page-body .radios{
+display: block;
+}
+
+/* 管理员主页 */
+.basic-informaion .detail-information{
+  padding: 1rem 2rem;
+}
+.basic-informaion .detail-information p {
+  margin-left: 2;
+  margin-bottom: 0;
+}
+#menu2 form label{
+  margin-left: 0;
+}
+#menu2 form button{
+  float: right;
+  margin: 2rem 1rem;
+}
+.page-body form #label{
+  margin-left: 0;
+}
+.page-body form #label+input{
+  width: 20rem;
+}
+.main-page-ul li:hover a{
+  color: white;
+  background: #007bff;
+}
+.manager-main{
+  margin-top: 2rem;
+}
+
+ 
+/* 分页 */
+.layui-box{
+ float: right;
+ margin-right: 2rem;
+}
+
+/* 表格 */
+#search-result-table tr td,
+#my-borrowing tr td{
+  vertical-align: middle;
+}
+
+/* 覆盖层 loading */
+.cover{
+  height: 100%;
+  width: 100%;
+  background: white url(../img/loading.gif) center center no-repeat;
+  position: absolute;  
+  left: 0;
+  top: 0;
+}
+
+/* 添加读者 */
+.add-reader{
+   width: 80%;
+}
+#add-reader label{
+  margin-bottom: 0;
+}
+.add-reader input,
+.add-reader select{
+  border-radius: 5px;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid lightgray;
+}
+.add-reader select option{
+  display: inline-block;
+  padding: 0.3rem;
+}
+.add-reader input:focus{
+  border: 1px solid gray; 
+}
+.add-reader table td{
+  vertical-align: middle;
+}
+.add-reader table tr td:first-of-type{
+  text-align: center;
+}
+.add-reader input[type=submit]{
+  margin-left: 15rem;
+}
+.error{
+  color: orangered;
+}
+/* 编辑读者 */
+.edit-reader form label{
+  margin-left: 2rem;
+  padding-top: 1rem;
+}
+.edit-reader-result table tr td{
+  vertical-align: middle;
+}
+.edit-reader-result table input[type=text],
+.edit-reader-result table input[type=number]{
+  padding: 0.5rem 0.3rem;
+  border: none;
+  width: 7rem;
+  background-color: transparent;
+}
+.edit-reader-result table input[maxlength]{
+  width: 3rem;
+}
+.editable{
+  background: white !important;
+  border: 1px solid white !important;
+}
+
+/* 登记期刊 */
+.cascading-drop-down .form-control{
+  width: auto;
+  display: inline-block;
+}
+.cascading-drop-down form input:last-child{
+  float: right;
+  display: inline-block;
+  margin-top: 5rem;
+  margin-right: 3.5rem;
+}
+.cascading-drop-down,
+.order-periodical-table {
+  margin-top: 2rem;
+}
+.cascading-drop-down h4{
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+.cascading-drop-down form{
+  position: relative;
+}
+.cascading-drop-down input[type=text] {
+  width: 5rem;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  height: 2.5rem;
+  color:#495057;
+  padding: 0.15rem 0.3rem;
+}
+.cascading-drop-down form button{
+  cursor: pointer;
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid #ced4da;
+  
+}
+.cascading-drop-down form #add{
+  position: absolute;
+  left: 680px;
+  top: 2px;
+  
+}
+.cascading-drop-down form #subtract{
+  position: absolute;
+  left: 680px;
+  top: 20px;
+}
+.cascading-drop-down form button:hover{
+  border: 1px solid gray;
+}
+#method_02 input,
+#method_02 select{
+  display: inline-block;
+  width: auto; 
+}
+#method_02 tr td:first-of-type{
+  vertical-align: middle;
+  text-align: center;
+}
+#method_02 tr td label{
+  margin-bottom: 0;
+  /* display: inline; */
+}
+.method-btn{
+  display: block;
+  margin: 2rem 0;
+}
+.order-periodical-table form input[value="提交"]{
+  float: right;
+  margin-right: 3.5rem;
+}
+
+/* 期刊盘存 */
+#search-periodical label{
+  display: inline-block;
+  margin-top: 2rem;
+  margin-left: 2rem;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
