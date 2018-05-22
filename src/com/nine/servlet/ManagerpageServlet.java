@@ -72,12 +72,7 @@ public class ManagerpageServlet extends HttpServlet {
 				}else if(jsonin.getString("message").equals("reader_id_validate")) {
 					//验证读者id
 					jsonout = new JSONObject();
-					if(rd.validateReader(jsonin.getString("reader_id"))) {
-						jsonout.put("istrue", "true");
-					}
-					else {
-						jsonout.put("istrue", "false");
-					}
+					jsonout.put("istrue", rd.validateReader(jsonin.getString("reader_id")));
 					resp.getWriter().write(jsonout.toString());
 					return;
 				}else if(jsonin.getString("message").equals("search_reader")) {

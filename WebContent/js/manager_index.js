@@ -95,8 +95,8 @@ $(function(){
 			},
 			success: function(validate_reader_result){
 				var validate_reader_result = JSON.parse(validate_reader_result);
-//				console.log(validate_reader_result);
-				if(validate_reader_result.istrue=="true"){
+				console.log(validate_reader_result);
+				if(validate_reader_result.istrue){
 //					console.log("该借阅证号已被使用");
 					$("<label id='reader_id-error' class='error'>该借阅证号已被使用</label>").appendTo($("#reader_id").parent());
 				}else{
@@ -456,7 +456,20 @@ $("#subtract").click(function() {
     return false;
 });
 
-
+// 登记期刊--------方式一
+$(function(){
+	$(".add_periodical_btn").click(function(){
+		let add_periodical_JSON ={
+				"message":"add_periodical",
+				"press":$("#select_press option:selected").val(),
+				"periodicalName":$("preiodicalName  option:selected").val(),
+				"periodicalType":$("publicationCycle option:selected").val(),
+				"issue":$("select_period option:selected").val(),
+				"count":$("select_number option:selected").val(),
+		}
+		console.log("add_periodical_JSON "+JSON.stringify(add_periodical_JSON));
+	});
+});
 // 登记期刊--------方式二——用户输入检测
 $("#method_02").validate({
     messages:

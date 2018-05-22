@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Boss</title>
+  <!-- Bootstrap core CSS -->
+  <link href="./css/bootstrap.min.css" rel="stylesheet">
+  <!-- layui -->
+  <link rel="stylesheet" href="./css/layui.css">
+  <!-- 圆形 -->
+  <link rel="stylesheet" href="./css/jquery.circliful.css">
+
+  <!-- 页面样式 -->
+  <link href="./css/boss_index.css" rel="stylesheet">
+
+  <!-- jQuery -->
+  <script src="./js/jquery-3.2.1.min.js"></script>
+  <!-- bootstrap -->
+  <script src="./js/bootstrap.min.js"></script>
+  <!-- Validate -->
+  <script src="./js/jquery.validate.js"></script>
+  <!-- bootbox -->
+  <script src="./js/bootbox.min.js"></script>
+  <!-- layui -->
+  <script src="./js/layui.js"></script>
+  <!-- Echart -->
+  <script src="./js/echarts.common.min.js"></script>
+  <!-- 圆形 -->
+  <script src="./js/jquery.circliful.min.js"></script>
+</head>
+
+<body>
+
+
+  <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="javascript:;">
+      <span class="welcome-u">欢迎您： </span>
+      <span id="reader"></span>
+    </a>
+    <!-- <input class="form-cont
+rol form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
+    <ul class="navbar-nav px-3">
+      <li class="nav-item text-nowrap">
+        <a class="nav-link" href="./login.html">退出系统</a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+        <div class="sidebar-sticky">
+          <ul class="nav flex-column my-nav">
+            <li class="nav-item" id="menu-item">
+              <a class="nav-link" href="javascript:;">
+                <span data-feather="home"></span>
+                我的主页
+              </a>
+            </li>
+            <li class="nav-item" id="menu-item">
+              <a class="nav-link" href="javascript:;">
+                <span data-feather="home"></span>
+                员工管理
+              </a>
+            </li>
+            <li class="nav-item subscript_li" id="menu-item">
+              <a class="nav-link" href="javascript:;">
+                <span data-feather="shopping-cart"></span>
+                征订统计
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- 我的主页 -->
+      <main role="main" id="search-book" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 manager-main">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+          <h1 class="h2">我的主页</h1>
+        </div>
+        <div class="page-body">
+          <div class="show-data-on-main-page">
+            <h1>系统数据统计</h1>
+            <div class="show-item">
+              <h3>系统管理员</h3>
+              <div id="myStathalf" data-dimension="250" data-text="" data-info="系统管理员" data-width="30" data-fontsize="38" data-percent="18"
+                data-fgcolor="green" data-bgcolor="#eee"></div>
+            </div>
+            <div class="show-item">
+              <h3>读者</h3>
+              <div id="myStat" data-dimension="250" data-text="" data-info="读者" data-width="30" data-fontsize="38" data-percent="40" data-fgcolor="#007bff"
+                data-bgcolor="#eee"></div>
+            </div>
+            <div class="show-item">
+              <h3>期刊</h3>
+              <div id="myStathalf2" data-dimension="250" data-text="" data-info="期刊数量" data-width="30" data-fontsize="38" data-percent="72"
+                data-fgcolor="green" data-bgcolor="#eee" data-icon="fa-task"></div>
+            </div>
+          </div>
+          <div class="show-data-on-main-page clearfix">
+            <h1>读者数据统计</h1>
+            <div id="show-reader-sex-data"></div>
+            <div id="show-reader-department-data"></div>
+          </div>
+        </div>
+      </main>
+
+      <!-- 员工管理 -->
+      <main role="main" id="main-page" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 hidden">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+          <h1 class="h2">员工管理</h1>
+        </div>
+        <div class="page-body">
+          <div class="manager-main">
+            <ul class="nav nav-pills main-page-ul first-nav-ul" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" data-toggle="pill" href="#add-employee">添加员工</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="pill" href="#edit-employee" id="edit-employee-nav">编辑员工</a>
+              </li>
+
+            </ul>
+          </div>
+          <div class="tab-content">
+            <!-- 添加员工-->
+            <div id="add-employee" class="container tab-pane active clearfix">
+              <form action="#" class="" id="add-employee-form">
+                <table class="table table-bordered add-employee-table">
+                  <tbody>
+                    <tr>
+                      <td>
+                        <label for="employeeID">职工号：</label>
+                      </td>
+                      <td>
+                        <input type="text" name="employeeID" id="employeeID" class="form-control">
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <label for="employeeName">姓名：</label>
+                      </td>
+                      <td>
+                        <input type="text" name="employeeName" id="employeeName" class="form-control">
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <label for="">性别：</label>
+                      </td>
+                      <td>
+                        <input type="radio" name="sex" id="male" value="male">
+                        <label for="male">男</label>
+                        <input type="radio" name="sex" id="female" value="female">
+                        <label for="female">女</label>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <label for="">职位：</label>
+                      </td>
+                      <td id="selected">
+                        <select id="" name="department" class="form-control">
+                          <option value="">请选择职位</option>
+                          <option value="buzhang">部长</option>
+                          <option value="kezhang">科长</option>
+                          <option value="zongguan">总管</option>
+                        </select>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="submit-add-employee">
+                  <input type="reset" value="重置" class="btn btn-secondary">
+                  <input type="submit" value="提交" class="btn btn-primary">
+                </div>
+              </form>
+            </div>
+            <!-- 编辑员工 -->
+            <div id="edit-employee" class="container tab-pane">
+              <table class="table table-hover edit-employee-table text-center">
+                <thead>
+                  <th>职工号</th>
+                  <th>姓名</th>
+                  <th>性别</th>
+                  <th>职位</th>
+                  <th>操作</th>
+                </thead>
+                <tbody class="edit-employee-table-body">
+
+                </tbody>
+              </table>
+              <div id="show-employee-data">
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+
+      </main>
+
+      <!-- 征订管理 -->
+      <main role="main" id="search-book" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 hidden">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+          <h1 class="h2">征订统计</h1>
+        </div>
+        <div class="page-body">
+          <div id="show-subscription-data"></div>
+        </div>
+      </main>
+
+
+    </div>
+  </div>
+
+  <!-- Icons -->
+  <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+  <script>
+    feather.replace();
+  </script>
+
+  <!-- Graphs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+
+
+  <!-- 测试JSON数据 -->
+  <script src="./js/test_json_workdata.js"></script>
+
+  <!-- import JS -->
+  <script src="js/boss_index.js"></script>
+
+</body>
+
+</html>

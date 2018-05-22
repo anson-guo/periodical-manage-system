@@ -70,6 +70,7 @@ public class ReaderDao {
 			pstmt.setString(1, readerID);
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
+//				System.out.println("rs.getString" + rs.getString(1));
 				istrue = true;
 			}
 		}catch (SQLException e) {
@@ -114,38 +115,31 @@ public class ReaderDao {
 	//修改密码
 	//验证旧密码
 	public boolean validatePassword(String readerID, String old_password) {
-		String psw = null;
+		boolean istrue = false;
 //		SELECT readerID,readerPD FROM jichen.readertb where readerID='2015110305';
-		String sql = "select " + KEY_ID + "," + KEY_PD + " from " + TABLE_R +  " where " + KEY_ID + "=?;";
+		String sql = "select * from " + TABLE_R +  " where " + KEY_ID + "=? and readerPD=MD5(?)";
 		Connection con = cd.getConnection();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-//		System.out.println(readerID);
 		try {
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, readerID);
+			pstmt.setString(2, old_password);
 			rs = pstmt.executeQuery();
-//			System.out.println(sql);
 			if(rs.next()) {
-//				System.out.println(rs.getString("readerPD"));
-				psw = rs.getString(2);
-//				System.out.println(psw);
+				istrue = true;
 			}
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
 			cd.closeAll(con,pstmt,rs);
 		}
-		if(psw.equals(old_password)) {
-			return true;
-		}else {
-			return false;
-		}
+		return istrue;
 	}
 	//修改密码
 	public boolean modifyPassword(String readerID, String new_password) {
 //		update readertb set readerPD='admin1' where readerID='2015110305';
-		String sql = "update "+TABLE_R+" set "+KEY_PD+"=? where "+KEY_ID+"=?";
+		String sql = "update "+TABLE_R+" set "+KEY_PD+"=MD5(?) where "+KEY_ID+"=?";
 		Connection con = cd.getConnection();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -189,7 +183,7 @@ public class ReaderDao {
 	//添加读者
 	public boolean addReader(String readerID, String readerName, String department, String sex) {
 //		insert into readertb values ('2015110316','黄宇','志工部','admin','100','女')
-		String sql = "insert into "+TABLE_R+" values (?,?,?,'admin','99',?) ";
+		String sql = "insert into "+TABLE_R+" values (?,?,?,MD5('admin'),'10',?) ";
 		Connection con = cd.getConnection();
 		PreparedStatement pstmt = null;
 		try {

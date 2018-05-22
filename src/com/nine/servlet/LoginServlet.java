@@ -51,13 +51,13 @@ public class LoginServlet extends HttpServlet {
 					System.out.println(idnumber.length());
 					if(idnumber.length()==10) {
 						
-						System.out.println("reader");
+//						System.out.println("reader");
 						jsonout.put("istrue", ud.findUser(idnumber,password));
 					}else if(idnumber.length()==8) {
-						System.out.println("manager");
+//						System.out.println("manager");
 						jsonout.put("istrue", md.findManager(idnumber, password));
 					}else {
-							jsonout.put("istrue", false);
+						jsonout.put("istrue", false);
 					}
 					System.out.println(jsonout.toString());
 					resp.getWriter().write(jsonout.toString());
@@ -65,14 +65,20 @@ public class LoginServlet extends HttpServlet {
 			}
 			
 		}if(action.equals("success.php")) {
-			String iD = req.getParameter("username");
+			String ID = req.getParameter("username");
 			req.getSession().setAttribute("login", true);
-			req.getSession().setAttribute("ID", iD);
-			if(iD.length()==10) {
-				
+			req.getSession().setAttribute("ID", ID);
+			System.out.println("ID is "+ID);
+			if(ID.length()==10) {
 				resp.sendRedirect("../user_index.html");
-			}else if(iD.length()==8) {
-				resp.sendRedirect("../manager_index.html");
+			}else if(ID.length()==8) {
+				String post = md.findPost(ID);
+				System.out.println(post);
+				if(post.equals("老板")) {
+					resp.sendRedirect("../boss_index.html");
+				}else if(post.equals("管理员")) {
+					resp.sendRedirect("../manager_index.html");
+				}
 			}
 		}
 	}

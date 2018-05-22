@@ -52,7 +52,7 @@ public class ManagerDao {
 		}
 		return istrue;
 	}
-	// 获取管理员信息
+	// 获取某位管理员信息
 	public JSONObject getEmployee(String employeeID) {
 		Employee temp_employee = new Employee();
 		JSONObject jsonObject = null;
@@ -81,6 +81,34 @@ public class ManagerDao {
 		}
 		return jsonObject;
 	}
+	//获取所有管理信息
+	public JSONArray getAllEmployee() {
+		JSONArray jsonArraye = new JSONArray();
+		Connection con = cd.getConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		//SELECT employeeID, employeeName,sex,post FROM jichen.employeetb;
+		String sql = "select " + KEY_ID + "," + KEY_NAME + "," + KEY_SEX + "," + KEY_POST + 
+				" from " + TABLE_E ;
+		try {
+			pstmt = con.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Employee temp_employee = new Employee();
+				temp_employee.setEmployeeID(rs.getString(1));
+				temp_employee.setEmployeeName(rs.getString(2));
+				temp_employee.setSex(rs.getString(3));
+				temp_employee.setPost(rs.getString(4));
+				jsonArraye.add(temp_employee);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			cd.closeAll(con,pstmt,rs);
+		}
+		return jsonArraye;
+	}
+
 	//获取管理员工作量
 	public JSONArray returnWorkload(String employeeID) {
 		JSONArray jsonArray = new JSONArray();
@@ -109,5 +137,49 @@ public class ManagerDao {
 		}
 		return jsonArray;
 	}
-	
+	//获取职位
+	public String findPost(String employeeID) {
+		// 数据库
+		String post = null;
+//		SELECT post FROM employeetb where employeeID='20150001';
+		String sql = "select post from " + TABLE_E + " where " + KEY_ID + "=? ";
+		// String sql = "select " + KEY_ID + "," + KEY_PD + " from " + TABLE_R + " where
+		// " + KEY_NAME +"='郭逢枭' and "+KEY_ID + "=?;";
+		Connection con = cd.getConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		// System.out.println(readerID);
+		try {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, employeeID);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				post = rs.getString(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			cd.closeAll(con, pstmt, rs);
+		}
+		return post;
+	}
+	//添加管理员
+	public boolean addManager(String employeeID, String employeeName, String sex) {
+		boolean istrue = false;
+//		insert into employeetb values ('','','','管理员',MD5(''))
+		String sql = "insert into employeetb values (?,?,?,'管理员',MD5('admin')) ";
+		Connection con = cd.getConnection();
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, employeeID);
+			pstmt.setString(2, employeeName);
+			pstmt.setString(3, sex);
+			pstmt.executeUpdate();
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return istrue;
+	}
 }

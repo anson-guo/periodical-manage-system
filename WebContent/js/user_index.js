@@ -66,7 +66,7 @@ let borrowinfo = function () {
 								},
 								success: function(return_periodical_result){
 									var return_periodical_result = JSON.parse(return_periodical_result);
-									console.log("return_periodical_result.istrue");
+									console.log("return_periodical_result.istrue"+return_periodical_result.istrue);
 									borrowinfo();
 								},
 								error:function(){
@@ -146,6 +146,25 @@ $("#old-psd").blur(function(){
 		}
 	});
 });
+//验证“更改密码”
+function validateChangePassword() {
+	// 验证更改密码
+	$("#change-psd").validate({
+		rules: {
+			"again-psd": {
+				equalTo: "#new-psd"
+			}
+		},
+		messages: {
+			"old-psd": "请输入旧密码！",
+			"new-psd": "请输入新密码！",
+			"again-psd": {
+				required: "请再次输入您的新密码",
+				equalTo: "两次密码输入不一致"
+			}
+		}
+	});
+}
 //更新密码
 $("#submint_password").click(function(){
 	let new_psd = $("#new-psd").val();
@@ -257,25 +276,7 @@ function switchMainPageTabs(obj) {
 	});
 }
 
-// 验证“更改密码”
-function validateChangePassword() {
-	// 验证更改密码
-	$("#change-psd").validate({
-		rules: {
-			"again-psd": {
-				equalTo: "#new-psd"
-			}
-		},
-		messages: {
-			"old-psd": "请输入旧密码！",
-			"new-psd": "请输入新密码！",
-			"again-psd": {
-				required: "请再次输入您的新密码",
-				equalTo: "两次密码输入不一致"
-			}
-		}
-	});
-}
+
 
 // 查询期刊功能
 function searchBook() {
@@ -384,76 +385,75 @@ function loadcurpage(limit, search_result){
 				+ search_result[i].number
 				+ "</td><td>";
 				$(data+ "<a href='#' class='borrow_periodical_btn btn btn-primary' data-toggle='modal' data-target='#borrow-book'>借阅</a></td></tr>").appendTo($("#search-result-tbody"));
-			
-//			search_result[i].borrowed == "true"
-			//点击搜索界面的借阅按钮
-			$(".borrow_periodical_btn").click(function (){
-				var current_Btn = $(this);
-				var borrow_send_data ={
-						"issue": current_Btn.parent().parent().children('.willborrow_issue').text(),
-						"periodicalName": current_Btn.parent().parent().children('.willborrow_periodicalName').text(),
-						"message": "willborrowlist"
-						};
-//				console.log("borrow_send_data :"+JSON.stringify(borrow_send_data));
-				$.ajax({
-					url: "user/sendmessage.php",
-					method: "post",
-					data: JSON.stringify(borrow_send_data),
-					before: function(){
-						
-					},
-					success: function(willborrowlist_result){
-						if(willborrowlist_result != null){
-							var willborrowlist_result = JSON.parse(willborrowlist_result);	
-							console.log("willborrowlist_result is "+JSON.stringify(willborrowlist_result));
-							
-							$("<table id='select-periodical' class='table table-hover'></table>").appendTo(".modal-body");	
-							
-							$("#select-periodical").empty();
-							
-							for(let i = 0; i < willborrowlist_result.length; i++) {
-//								console.log("here:" + i + " :" + willborrowlist_result[i].periodicalName);
-								let data = "<tr>" + 
-								    "<td>" + willborrowlist_result[i].issue + "</td>" + 
-									"<td>" + willborrowlist_result[i].periodicalName + "</td>" +
-									"<td>" + willborrowlist_result[i].periodicalID + "</td>" + 
-									"<td>" + "<button class='comfir_borrow_btn btn btn-primary"+(willborrowlist_result[i].borrowed=="true"?" disabled":"")+"'>借阅</button>"+ "</td>" + 
-									"</tr>";
-								$("#select-periodical").append($(data));
-								//点击弹出框的借阅按钮
-								$(".comfir_borrow_btn").click(function(){
-									var comfir_borrow_btn = $(this);
-									var borrow_periodicalID = $(this).parent().prev().text();
-									var borrow_periodical_JSON = {
-											"borrow_periodicalID": borrow_periodicalID,
-											"message":"borrow_periodical"
-									}
-									console.log("borrow_periodical"+borrow_periodical_JSON);
-									$.ajax({
-										url: "user/sendmessage.php",
-										method: "post",
-										data: JSON.stringify(borrow_periodical_JSON),
-										before: function(){
-											
-										},
-										success: function(borrow_periodical_result){
-											borrow_periodical_result = JSON.parse(borrow_periodical_result);
-											console.log("借阅"+borrow_periodical_result.istrue);
-											if(borrow_periodical_result.istrue){
-//												console.log("if is true");
-												comfir_borrow_btn.attr("disabled",true);
-											}
-										},
-										error: function(){
-											
-										}
-									})
-								});
+		}//else end
+	}//for end
+	//点击搜索界面的借阅按钮
+	$(".borrow_periodical_btn").click(function (){
+		console.log("click 搜索界面的借阅按钮");
+		var current_Btn = $(this);
+		var borrow_send_data ={
+				"issue": current_Btn.parent().parent().children('.willborrow_issue').text(),
+				"periodicalName": current_Btn.parent().parent().children('.willborrow_periodicalName').text(),
+				"message": "willborrowlist"
+				};
+		console.log("borrow_send_data :"+JSON.stringify(borrow_send_data));
+		$.ajax({
+			url: "user/sendmessage.php",
+			method: "post",
+			data: JSON.stringify(borrow_send_data),
+			before: function(){
+				
+			},
+			success: function(willborrowlist_result){
+				if(willborrowlist_result != null){
+					var willborrowlist_result = JSON.parse(willborrowlist_result);	
+					console.log("willborrowlist_result is "+JSON.stringify(willborrowlist_result));
+					
+					$("<table id='select-periodical' class='table table-hover'></table>").appendTo(".modal-body");	
+					
+					$("#select-periodical").empty();
+					
+					for(let i = 0; i < willborrowlist_result.length; i++) {
+//						console.log("here:" + i + " :" + willborrowlist_result[i].periodicalName);
+						let data = "<tr>" + 
+						    "<td>" + willborrowlist_result[i].issue + "</td>" + 
+							"<td>" + willborrowlist_result[i].periodicalName + "</td>" +
+							"<td>" + willborrowlist_result[i].periodicalID + "</td>" + 
+							"<td>" + "<button class='comfir_borrow_btn btn btn-primary"+(willborrowlist_result[i].borrowed=="true"?" disabled":"")+"'>借阅</button>"+ "</td>" + 
+							"</tr>";
+						$("#select-periodical").append($(data));
+						//点击弹出框的借阅按钮
+						$(".comfir_borrow_btn").click(function(){
+							var comfir_borrow_btn = $(this);
+							var borrow_periodicalID = $(this).parent().prev().text();
+							var borrow_periodical_JSON = {
+									"borrow_periodicalID": borrow_periodicalID,
+									"message":"borrow_periodical"
 							}
-						}
+							console.log("borrow_periodical"+JSON.stringify(borrow_periodical_JSON));
+							$.ajax({
+								url: "user/sendmessage.php",
+								method: "post",
+								data: JSON.stringify(borrow_periodical_JSON),
+								before: function(){
+									
+								},
+								success: function(borrow_periodical_result){
+									borrow_periodical_result = JSON.parse(borrow_periodical_result);
+									console.log("借阅"+borrow_periodical_result.istrue);
+									if(borrow_periodical_result.istrue){
+//										console.log("if is true");
+										comfir_borrow_btn.attr("disabled",true);
+									}
+								},
+								error: function(){
+									
+								}
+							})
+						});
 					}
-				});
-			});
-		}
-	}
+				}
+			}
+		});
+	});
 }

@@ -252,13 +252,13 @@ public class BorrowDao {
 //			select periodicalID,readerID,endDate
 //			from borrowtb
 //			where periodicalID='161' and readerID='2015110305';
-			System.out.println("list.size is "+ list.size());
-//			select periodicalID
+//			System.out.println("list.size is "+ list.size());
+//			select periodicalID,endDate
 //			from borrowtb
 //			where readerID='2015110305';
 //			查询借阅表，如果该用户的借阅表中有该书，则使borrowed=ture；
 			
-				String sql2 = "select "+ KEY_PID+
+				String sql2 = "select "+ KEY_PID+","+KEY_EDATE+
 						" from " + TABLE_B +
 						" where "+KEY_RID+"=?";
 				ComDao cd2 = new ComDao();
@@ -267,16 +267,17 @@ public class BorrowDao {
 				
 				pstmt2.setString(1, readerID);
 				ResultSet rs2 = pstmt2.executeQuery();
-				if(rs2.next()) {
-					System.out.println("rs2 is "+rs2.getString(1));
+				while(rs2.next()) {
+//					System.out.println("-----------------------------------------");
+//					System.out.println("periodicalID is "+rs2.getString(1));
+//					System.out.println("endDate is "+rs2.getString(2));
 					for(int i = 0; i < list.size(); i++) {
-						System.out.println("list have "+rs2.getString(1)+"?"+(list.get(i).getPeriodicalID()==rs2.getString(1)));
-						if (rs2.getString(1).equals("1") && rs2.getDate(2)==null) {
-							System.out.println("ture");
+//						System.out.println("rs2.getString(1) is " + rs2.getString(1));
+//						System.out.println("list.get("+i+") is "+ list.get(i).getPeriodicalID());
+//						System.out.println("list have "+rs2.getString(1)+" ?"+(list.get(i).getPeriodicalID()==rs2.getString(1)));
+						if (rs2.getString(1).equals(list.get(i).getPeriodicalID()) && rs2.getDate(2)==null) {
+//							System.out.println("ture");
 							list.get(i).setBorrowed("true");
-						}else {
-							System.out.println("false");
-							list.get(i).setBorrowed("false");
 						}
 					}
 				}
