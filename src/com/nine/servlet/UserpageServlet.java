@@ -3,8 +3,6 @@ package com.nine.servlet;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.nine.dao.BorrowDao;
-import com.nine.dao.BossDao;
 import com.nine.dao.ReaderDao;
 
 import net.sf.json.JSONArray;
@@ -37,17 +34,16 @@ public class UserpageServlet extends HttpServlet {
 		resp.setContentType("text/html;charset=utf-8");
 		resp.setHeader("Cache-Control", "no-cache");
 		String action = req.getRequestURI().split("/")[3];
+		System.out.println("_______________________________________");
 		System.out.println("action is " + action);
 		ReaderDao rd = new ReaderDao();
 		BorrowDao bd = new BorrowDao();
-		BossDao boosd = new BossDao();
-		System.out.println(boosd.returnWorkload("20150101").toString());
 		String readerID =(String) req.getSession().getAttribute("ID");
 		//加载用户信息
 		if(action.equals("userinfo.php")) {
 //			System.out.println("start userinfo");
 			try {
-				System.out.println("readerID is "+readerID);
+//				System.out.println("readerID is "+readerID);
 				JSONObject reader = rd.getReader(readerID);
 				resp.getWriter().write(reader.toString());
 				return;
@@ -89,7 +85,9 @@ public class UserpageServlet extends HttpServlet {
 			JSONObject jsonout = null;
 			while((line = br.readLine()) != null){
 				sb.append(line);
+//				System.out.println("reading");
 			}
+//			System.out.println("sb.length "+sb.length());
 			if (sb.length() > 0) {
 				jsonin = JSONObject.fromObject(sb.toString());
 //				System.out.println(sb.toString());
@@ -105,19 +103,25 @@ public class UserpageServlet extends HttpServlet {
 					return;
 				}
 				//查询功能
+				//获得查询总页数
+				else if(jsonin.getString("message").equals("listCount")) {
+					jsonout = bd.searchCount(jsonin.getString("key"), jsonin.getString("search_item"));
+					resp.getWriter().write(jsonout.toString());
+				}
+				//返回查询结果
 				else if(jsonin.getString("message").equals("search")) {
 					
-					jsonout = bd.searchlist(jsonin.getString("key"), jsonin.getString("search_item"),jsonin.getString("page"), readerID);
+					jsonout = bd.searchlist(jsonin.getString("key"), jsonin.getString("search_item"),jsonin.getString("page"), jsonin.getInt("listCount"),readerID);
 //					System.out.println("search return :"+jsonout.toString());
 					resp.getWriter().write(jsonout.toString());
 					return ;
 				}
 				//
 				else if(jsonin.getString("message").equals("willborrowlist")) {
-					System.out.println("willborrowlist -----------------");
-					System.out.println("jsonin : " + jsonin.toString());
+//					System.out.println("willborrow -----------------");
+//					System.out.println("jsonin : " + jsonin.toString());
 					JSONArray jsonArrayout = bd.returnBorrowlist(jsonin.getString("periodicalName"), jsonin.getString("issue"), readerID);
-					System.out.println("willborrowlist : "+jsonArrayout.toString());
+//					System.out.println("willborrowlist : "+jsonArrayout.toString());
 					resp.getWriter().write(jsonArrayout.toString());
 				}
 				//借阅功能
@@ -131,17 +135,18 @@ public class UserpageServlet extends HttpServlet {
 				//验证密码
 				if(jsonin.getString("message").equals("validatePassword")) {
 					jsonout = new JSONObject();
+//					System.out.println(jsonin.toString());
 					jsonout.put("istrue", rd.validatePassword(readerID, jsonin.getString("old_psd")));
-					System.out.println(jsonout.toString());
+//					System.out.println(jsonout.toString());
 					resp.getWriter().write(jsonout.toString());
 				}
 				//修改秘密
 				if(jsonin.getString("message").equals("modifyPassword")) {
 					jsonout = new JSONObject();
 					
-					System.out.println(jsonin.toString());
+//					System.out.println(jsonin.toString());
 					jsonout.put("istrue", rd.modifyPassword(readerID, jsonin.getString("new_psd")));
-					System.out.println(jsonout.toString());
+//					System.out.println(jsonout.toString());
 					resp.getWriter().write(jsonout.toString());
 				}
 			}else {

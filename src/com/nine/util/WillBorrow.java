@@ -1,7 +1,5 @@
 package com.nine.util;
 
-import java.sql.Date;
-
 public class WillBorrow {
 	private String periodicalID;
 	private String issue;

@@ -1,22 +1,22 @@
 package com.nine.dao;
 
 
-import java.io.InputStream;
+//import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
+//import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
+//import java.util.Properties;
 
 import com.nine.util.Reader;
 
-import net.sf.json.JSON;
+//import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import net.sf.json.JSONString;
+//import net.sf.json.JSONString;
 
 public class ReaderDao {
 	private final String TABLE_R = "readertb";
@@ -28,10 +28,38 @@ public class ReaderDao {
 	private final String KEY_SEX = "sex";
 	private ComDao cd = new ComDao();
 	//查找用户得到密码
-	public String findUser(String readerID) {
+	public boolean findUser(String readerID,String readerPD) {
 		//数据库
-		String psw = null;
-		String sql = "select " + KEY_ID + "," + KEY_PD + " from " + TABLE_R +  " where " + KEY_ID + "=?;";
+		boolean istrue = false;
+//		SELECT * FROM jichen.employeetb where employeePD=MD5('jc_admin') and employeeID='20150101';
+		String sql = "select * from " + TABLE_R +  
+				" where " + KEY_ID + "=? and "+KEY_PD+"=MD5(?);";
+//		String sql = "select " + KEY_ID + "," + KEY_PD + " from " + TABLE_R +  " where " + KEY_NAME +"='郭逢枭' and "+KEY_ID + "=?;";
+		Connection con = cd.getConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+//		System.out.println(readerID);
+		try {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, readerID);
+			pstmt.setString(2, readerPD);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				istrue = true;
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			cd.closeAll(con,pstmt,rs);
+		}
+		return istrue;
+	}
+	//验证用户是否存在
+	public boolean validateReader(String readerID) {
+		boolean istrue = false;
+//		SELECT * FROM jichen.employeetb where employeePD=MD5('jc_admin') and employeeID='20150101';
+		String sql = "select * from " + TABLE_R +  
+				" where " + KEY_ID + "=?";
 //		String sql = "select " + KEY_ID + "," + KEY_PD + " from " + TABLE_R +  " where " + KEY_NAME +"='郭逢枭' and "+KEY_ID + "=?;";
 		Connection con = cd.getConnection();
 		PreparedStatement pstmt = null;
@@ -42,16 +70,14 @@ public class ReaderDao {
 			pstmt.setString(1, readerID);
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
-//				System.out.println(rs.getString("readerPD"));
-				psw = rs.getString(2);
-//				System.out.println(psw);
+				istrue = true;
 			}
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
-			cd.cloesConnection(rs, pstmt, con);
+			cd.closeAll(con,pstmt,rs);
 		}
-		return psw;
+		return istrue;
 	}
 	//获取用户信息
 	public JSONObject getReader(String readerID) {
@@ -69,7 +95,7 @@ public class ReaderDao {
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, readerID);
 			rs = pstmt.executeQuery();
-			System.out.println("readerinfo : "+sql);
+//			System.out.println("readerinfo : "+sql);
 			if(rs.next()) {
 				temp_reader.setReaderID(readerID);
 				temp_reader.setReaderName(rs.getString(1));
@@ -81,7 +107,7 @@ public class ReaderDao {
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}finally {
-			cd.cloesConnection(rs, pstmt, con);
+			cd.closeAll(con,pstmt,rs);
 		}
 		return jsonObject;
 	}
@@ -108,7 +134,7 @@ public class ReaderDao {
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
-			cd.cloesConnection(rs, pstmt, con);
+			cd.closeAll(con,pstmt,rs);
 		}
 		if(psw.equals(old_password)) {
 			return true;
@@ -133,7 +159,7 @@ public class ReaderDao {
 			e.printStackTrace();
 			return false;
 		}finally {
-			cd.cloesConnection(rs, pstmt, con);
+			cd.closeAll(con,pstmt,rs);
 		}
 		return true;
 	}
@@ -208,10 +234,11 @@ public class ReaderDao {
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
-			cd.cloesConnection(rs, pstmt, con);
+			cd.closeAll(con,pstmt,rs);
 		}
 		return jsonArray;
 	}
+	//删除用户
 	public boolean delReader(String readerID) {
 //		delete from readertb where readerID='2015110301';
 		String sql = "delete from "+TABLE_R+" where "+KEY_ID+"=?";

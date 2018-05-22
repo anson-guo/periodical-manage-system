@@ -1,55 +1,80 @@
 package com.nine.dao;
 
-import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Properties;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 
 public class ComDao {
-	public ComDao() {
-		
-	}
+	public static String sqlDialect;
+	public static String dataSource;
+	/**
+	 * 获取数据库连接对象。
+	 */
 	public Connection getConnection() {
-		Properties datainfo = new Properties();
-		InputStream path = null;
-		Connection connection = null;
+		Connection conn = null;
+		Context ctx = null;
+		// 获取连接并捕获异常
 		try {
-			path = getClass().getResourceAsStream("/datainfo.properties");
-			datainfo.load(path);
-//			System.out.println(datainfo.getProperty("database") + datainfo.getProperty("user") + datainfo.getProperty("password"));
-			String driver = "com.mysql.jdbc.Driver";
-			String url = "jdbc:mysql://localhost:3306/" + datainfo.getProperty("database") + "?characterEncoding=utf-8";
-			String user = datainfo.getProperty("user");
-			String password = datainfo.getProperty("password");
+			ctx = new InitialContext();
+			DataSource ds = (DataSource) ctx.lookup("java:comp/env/jdbc/" + dataSource);
+//			System.out.println(dataSource);
+			conn = ds.getConnection();
+		} catch (NamingException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		if(conn == null) {
+			System.err.println("无法建立数据库连接。");
+		}
+		return conn;
+	}
+
+	/**
+	 * 关闭数据库连接。
+	 * 
+	 * @param conn
+	 *            数据库连接
+	 * @param stmt
+	 *            Statement对象
+	 * @param rs
+	 *            结果集
+	 */
+	public void closeAll(Connection conn, PreparedStatement pstmt, ResultSet rs) {
+		// 若结果集对象不为空，则关闭
+		if (rs != null) {
 			try {
-				Class.forName(driver);
-				connection = DriverManager.getConnection(url, user, password);
-			} catch(ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch(SQLException e) {
-				e.printStackTrace();
-			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		return connection;
-	}
-	public void cloesConnection(ResultSet rs, PreparedStatement pstmt, Connection con) {
-		try {
-			if(rs != null) {
 				rs.close();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			if(pstmt != null) {
+		}
+		// 若Statement对象不为空，则关闭
+		if (pstmt != null) {
+			try {
 				pstmt.close();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			if(con != null) {
-				con.close();
+		}
+		// 若数据库连接对象不为空，则关闭
+		if (conn != null) {
+			try {
+				conn.close();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		}catch(SQLException e) {
-			e.printStackTrace();
 		}
 	}
+
+	public void closeAll(Connection conn, PreparedStatement pstmt) {
+		closeAll(conn, pstmt, null);
+	}
+
 }

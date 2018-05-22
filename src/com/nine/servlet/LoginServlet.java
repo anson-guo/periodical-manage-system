@@ -2,7 +2,6 @@ package com.nine.servlet;
 
 import java.io.*;
 
-import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -29,7 +28,7 @@ public class LoginServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		ReaderDao ud = new ReaderDao();
 		ManagerDao md = new ManagerDao();
-		req.setCharacterEncoding("UTF-8"); 
+//		req.setCharacterEncoding("UTF-8"); 
 		resp.setContentType("text/html;charset=utf-8");
 		resp.setHeader("Cache-Control", "no-cache");
 		String action = req.getRequestURI().split("/")[3];
@@ -43,6 +42,7 @@ public class LoginServlet extends HttpServlet {
 			while((line = br.readLine()) != null){
 				sb.append(line);
 			}
+//			System.out.println("login sb'length is "+sb.length());
 			if (sb.length() > 0) {
 					jsonin = JSONObject.fromObject(sb.toString());
 //					System.out.println("message is "+jsonin.getString("message"));
@@ -52,27 +52,16 @@ public class LoginServlet extends HttpServlet {
 					if(idnumber.length()==10) {
 						
 						System.out.println("reader");
-						String pwd = ud.findUser(idnumber);
-						if (pwd == null || !pwd.equals(password)) {
-							jsonout.put("istrue", false);
-							resp.getWriter().write(jsonout.toString());
-						}
-						else {
-							jsonout.put("istrue", true);
-							resp.getWriter().write(jsonout.toString());
-						}
+						jsonout.put("istrue", ud.findUser(idnumber,password));
 					}else if(idnumber.length()==8) {
 						System.out.println("manager");
-						String pwd = md.findManager(idnumber);
-						if (pwd == null || !pwd.equals(password)) {
+						jsonout.put("istrue", md.findManager(idnumber, password));
+					}else {
 							jsonout.put("istrue", false);
-							resp.getWriter().write(jsonout.toString());
-						}
-						else {
-							jsonout.put("istrue", true);
-							resp.getWriter().write(jsonout.toString());
-						}
 					}
+					System.out.println(jsonout.toString());
+					resp.getWriter().write(jsonout.toString());
+					
 			}
 			
 		}if(action.equals("success.php")) {

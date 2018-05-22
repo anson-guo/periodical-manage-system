@@ -37,13 +37,14 @@ $(function () {
         		
         	},
         	success: function(login_return){
-        		if(login_return==null){
+        		if(login_return==null||login_return ==""){
         			$("#inputPassword").val("");
-        			bootbox.alert("密码或用户名失败");
+        			bootbox.alert("密码或用户名错误");
         			slider.reset();
         			slider.init();
         			$("#btn_login").addClass("hidden");
         		}else{
+        			console.log(login_return);
 	        		var login_return=JSON.parse(login_return);
 	        		console.log(login_return.istrue);
 	        		if(login_return.istrue == true){

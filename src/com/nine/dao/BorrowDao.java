@@ -40,13 +40,12 @@ public class BorrowDao {
 		ResultSet rs = null;
 		String sql = "select " + TABLE_B + "." + KEY_PID + "," + KEY_PNAME + "," + KEY_BDATE + "," + KEY_EDATE + "," + KEY_REMARKS +
 				" from " + TABLE_B + "," + TABLE_P +
-				" where " + TABLE_B + "." + KEY_PID + "=" + TABLE_P + "." + KEY_PID + " and " + KEY_EDATE +"='0'" + " and " + KEY_RID + "='" + readerID +"'";
-//		System.out.println(sql);
+				" where " + TABLE_B + "." + KEY_PID + "=" + TABLE_P + "." + KEY_PID + " and " + KEY_EDATE +" is null" + " and " + KEY_RID + "='" + readerID +"'";
+		System.out.println("getborrowList "+sql);
 		try {
 			pstmt = con.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
-				WillBorrow bElement = new WillBorrow();
 //				System.out.println(rs.getString(1));
 				borrowMap.put("periodicalID",rs.getString(1));
 //				System.out.println(rs.getString(2));
@@ -65,7 +64,7 @@ public class BorrowDao {
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}finally {
-			cd.cloesConnection(rs, pstmt, con);
+			cd.closeAll(con,pstmt,rs);
 		}
 //		return jsonObject;
 		return jsonArray;
@@ -91,7 +90,7 @@ public class BorrowDao {
 			e.printStackTrace();
 			return false;
 		}finally {
-			cd.cloesConnection(null, pstmt, con);
+			cd.closeAll(con,pstmt);
 		}
 			return true;
 	}
@@ -105,7 +104,7 @@ public class BorrowDao {
 //		where readerID='20150101' and borrowtb.periodicalID = periodicalstb.periodicalID and endDate not like '0000-00-00';
 		String sql = "select "+ TABLE_B + "." + KEY_PID + ", " + KEY_PNAME + ", " + KEY_BDATE + ", "+ KEY_EDATE + ", "+ KEY_REMARKS +
 					" from " + TABLE_B + ", "+ TABLE_P +
-					" where " + TABLE_B +"." + KEY_PID + "=" + TABLE_P + "." + KEY_PID +" and " + KEY_RID +"=? and " + KEY_EDATE + " != '0000-00-00'";
+					" where " + TABLE_B +"." + KEY_PID + "=" + TABLE_P + "." + KEY_PID +" and " + KEY_RID +"=? and " + KEY_EDATE + " is not null ";
 		Map<String, String> historyMap = new HashMap<String,String>();
 		JSONObject jsonObject = null;
 		JSONArray jsonArray = new JSONArray();
@@ -126,49 +125,23 @@ public class BorrowDao {
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
-			cd.cloesConnection(rs, pstmt, con);
+			cd.closeAll(con,pstmt,rs);
 		}
 		return jsonArray;
 	}
 	//搜索框
-	public JSONObject searchlist(String key, String search_item, String endcount, String readerID) {
+	public JSONObject searchlist(String key, String search_item, String endcount, int listcount,String readerID) {
 		Connection con = cd.getConnection();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		JSONObject jsonObject = null;
 		JSONObject return_json = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
-		int listcount = 0;
-//		select count(1) from 
-//		(select  issue, periodicalName, press
-//		from periodicalstb
-//		where press like '%115%'
-//		group by issue,periodicalName, press) t
-		//获取总页数
-		String sql ="select count(1) from ("+
-		"select " + KEY_ISSUE +"," +KEY_PNAME +"," + KEY_PRESS+"," + "count(2) as count" +
-		" from "+ TABLE_P +
-		" where "+search_item+" like ? "
-		+ "group by " + KEY_ISSUE +", " +KEY_PNAME +", "+ KEY_PRESS +
-		") t";
-		try {
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, "%"+key+"%");
-			rs = pstmt.executeQuery();
-			//计数
-			if(rs.next()) {
-				listcount = rs.getInt(1);
-			}
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}finally {
-			cd.cloesConnection(rs, pstmt, con);
-		}
 //		select issue,periodicalName, press, count(2) as count
 //		from periodicalstb
 //		where press like '%115%'
 //		group by issue,periodicalName, press;
-		sql = "select " + KEY_ISSUE +"," +KEY_PNAME +"," + KEY_PRESS+"," + "count(2) as count" +
+		String sql = "select " + KEY_ISSUE +"," +KEY_PNAME +"," + KEY_PRESS+"," + "count(2) as count" +
 				" from "+ TABLE_P +
 				" where "+search_item+" like ? "
 				+ "group by " + KEY_ISSUE +", " +KEY_PNAME +", "+ KEY_PRESS+
@@ -192,9 +165,8 @@ public class BorrowDao {
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
-			cd.cloesConnection(rs, pstmt, con);
+			cd.closeAll(con,pstmt,rs);
 		}
-		return_json.put("listcount", listcount);
 		return_json.put("search_result", jsonArray);
 		return return_json;
 	}
@@ -276,38 +248,41 @@ public class BorrowDao {
 				willborrow.setBorrowed("false");
 				list.add(willborrow);
 			}
-			cd.cloesConnection(rs, pstmt, con);
+			cd.closeAll(con,pstmt,rs);
 //			select periodicalID,readerID,endDate
 //			from borrowtb
 //			where periodicalID='161' and readerID='2015110305';
-			for (int i =0; i<list.size(); i++){
-				String sql2 = "select count(1) as count,"+KEY_EDATE+
-								" from "+TABLE_B+
-								" where "+KEY_PID+"=? and "+ KEY_RID+"=? ";
+			System.out.println("list.size is "+ list.size());
+//			select periodicalID
+//			from borrowtb
+//			where readerID='2015110305';
+//			查询借阅表，如果该用户的借阅表中有该书，则使borrowed=ture；
+			
+				String sql2 = "select "+ KEY_PID+
+						" from " + TABLE_B +
+						" where "+KEY_RID+"=?";
 				ComDao cd2 = new ComDao();
 				Connection con2 = cd2.getConnection();
 				PreparedStatement pstmt2 = con2.prepareStatement(sql2);
 				
-				pstmt2.setString(1, list.get(i).getPeriodicalID());
-				pstmt2.setString(2, readerID);
+				pstmt2.setString(1, readerID);
 				ResultSet rs2 = pstmt2.executeQuery();
 				if(rs2.next()) {
-					System.out.println("get : "+list.get(i).getPeriodicalID());
-					System.out.println("count "+rs2.getString(1)+"end "+ (rs2.getDate(2)==null));
-					if (rs2.getString(1).equals("1") && rs2.getDate(2)==null) {
-						System.out.println("ture");
-						list.get(i).setBorrowed("true");
-					}else {
-						System.out.println("false");
-						list.get(i).setBorrowed("false");
+					System.out.println("rs2 is "+rs2.getString(1));
+					for(int i = 0; i < list.size(); i++) {
+						System.out.println("list have "+rs2.getString(1)+"?"+(list.get(i).getPeriodicalID()==rs2.getString(1)));
+						if (rs2.getString(1).equals("1") && rs2.getDate(2)==null) {
+							System.out.println("ture");
+							list.get(i).setBorrowed("true");
+						}else {
+							System.out.println("false");
+							list.get(i).setBorrowed("false");
+						}
 					}
 				}
-				cd.cloesConnection(rs2, pstmt2, con2);
-			}
+				cd.closeAll(con,pstmt,rs);
 		}catch (SQLException e) {
 			e.printStackTrace();
-		}finally {
-			cd.cloesConnection(rs, pstmt, con);
 		}
 		jsonArray = JSONArray.fromObject(list);
 		return jsonArray;
@@ -333,7 +308,7 @@ public class BorrowDao {
 //					insert into borrowtb(readerID, periodicalID, beginDate,endDate) values('20150101','115N000120170101','2017-05-12',null);
 					sql = "insert into "+TABLE_B +"("+KEY_RID+", "+KEY_PID+", "+KEY_BDATE+", "+KEY_EDATE+ ") values(?,?,?,null)";
 //					System.out.println(sql);
-					cd.cloesConnection(rs, pstmt, con);
+					cd.closeAll(con,pstmt,rs);
 					con = cd.getConnection();
 					pstmt = con.prepareStatement(sql);
 					pstmt.setString(1, readerID);
@@ -344,7 +319,7 @@ public class BorrowDao {
 //					update borrowtb set beginDate='2018-05-12', endDate=null where readerID='20150101' and periodicalID='115N000320170101';
 					sql = "update "+ TABLE_B + " set " + KEY_BDATE +"=?, "+ KEY_EDATE +"=null where " + KEY_RID + "=? and " + KEY_PID + "=?";
 //					System.out.println(sql);
-					cd.cloesConnection(rs, pstmt, con);
+					cd.closeAll(con,pstmt,rs);
 					con = cd.getConnection();
 					pstmt = con.prepareStatement(sql);
 					pstmt.setString(1, df.format(nowtime));
@@ -357,8 +332,44 @@ public class BorrowDao {
 			e.printStackTrace();
 			return false;
 		}finally {
-			cd.cloesConnection(rs,pstmt, con);
+			cd.closeAll(con,pstmt,rs);
 		}
 		return true;
+	}
+	//搜索总页数
+	public JSONObject searchCount(String key, String search_item) {
+		Connection con = cd.getConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		JSONObject return_json = new JSONObject();
+		int listcount = 0;
+//		select count(1) from 
+//		(select  issue, periodicalName, press
+//		from periodicalstb
+//		where press like '%115%'
+//		group by issue,periodicalName, press) t
+		//获取总页数
+		String sql ="select count(1) from ("+
+		"select " + KEY_ISSUE +"," +KEY_PNAME +"," + KEY_PRESS+"," + "count(2) as count" +
+		" from "+ TABLE_P +
+		" where "+search_item+" like ? "
+		+ "group by " + KEY_ISSUE +", " +KEY_PNAME +", "+ KEY_PRESS +
+		") t";
+		try {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, "%"+key+"%");
+			rs = pstmt.executeQuery();
+			//计数
+			if(rs.next()) {
+				listcount = rs.getInt(1);
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}finally {
+			cd.closeAll(con,pstmt,rs);
+		}
+		return_json.put("listcount", listcount);
+		return return_json;
 	}
 }

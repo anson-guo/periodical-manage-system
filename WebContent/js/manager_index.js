@@ -106,6 +106,7 @@ $(function(){
 			});
 	});
 })
+//添加用户的前端验证
 function validateAddReader() {
     $("#add-reader-form").validate({
         rules: {
@@ -312,12 +313,7 @@ function searchReader() {
 			        });
 				}
 			}
-		});
-
-        // console.log("key：" + key);
-        // console.log("search_item：" + search_item);
-
-        
+		});      
     }
 }
 
@@ -349,29 +345,64 @@ function loadSearchReaderResult(search_result) {
 
 // “出版社”与“期刊名”级联
 $("#select_press").click(function () {
-    let $press_node = $("#select_press");
-    if ($press_node.children().length == 1) {
-        for (temp in test_press) {
-            $press_node.get(0).add(new Option(test_press[temp], temp));
-        }
-    }
+	let send_select_press = {
+			"message":"getPresses"
+	}
+	$.ajax({
+		url: "manager/sendmessage.php",
+		method: "post",
+		data: JSON.stringify(send_select_press),
+		before: function () {
+		},
+		success: function (select_press_result) {
+//			console.log("级联总数据"+ select_press_result	);
+			select_press_result = JSON.parse(select_press_result);
+			let $press_node = $("#select_press");
+			if ($press_node.children().length == 1) {
+				for (temp in select_press_result.press) {
+					$press_node.get(0).add(new Option(select_press_result.press[temp], temp));
+				}
+			}
+		}
+	});
+    
 });
 $("#select_press").change(function () {
     setPeriodical();
 });
 // 设置“期刊名”列表
 function setPeriodical() {
+	
     let $periodical = $("#select_preiodicalName");
     $periodical.get(0).options.length = 1;
 
     let press_selected = $("#select_press").val();
-    if (!test_periodical[press_selected]) {
-        return false;
+    console.log(press_selected);
+    let send_setPeriodical ={
+    		"message":"getPeriodicals",
+    		"pressID":press_selected
     }
-    let secondJSON = test_periodical[press_selected];
-    for (temp in secondJSON) {
-        $periodical.get(0).add(new Option(secondJSON[temp], temp));
-    }
+    $.ajax({
+		url: "manager/sendmessage.php",
+		method: "post",
+		data: JSON.stringify(send_setPeriodical),
+		before: function () {
+		},
+		success: function (send_setPeriodical_result) {
+			send_setPeriodical_result = JSON.parse(send_setPeriodical_result);
+			console.log(send_setPeriodical_result);
+			for (temp in send_setPeriodical_result) {
+		        $periodical.get(0).add(new Option(send_setPeriodical_result[temp], temp));
+		    }
+		}
+    });
+//    if (!test_periodical[press_selected]) {
+//        return false;
+//    }
+//    let secondJSON = test_periodical[press_selected];
+//    for (temp in secondJSON) {
+//        $periodical.get(0).add(new Option(secondJSON[temp], temp));
+//    }
 }
 
 // “出版周期”和“订购期数”级联

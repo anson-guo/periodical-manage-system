@@ -6,79 +6,88 @@ setTimeout(function () {
 	});
 }, 500);
 
-$(function () {
-	// 加载基本信息
-	let logininfo = function () {
-		$.ajax({
-			url: "user/userinfo.php",
-			method: "post",
-			before: function () {
-			},
-			success: function (data) {
-				if(data!=null){
-					var user = data;
-					user = JSON.parse(user);
-					loadBaseInfo(user);
-				}
-			},
-			error: function () {
-			}
-		});
-	};
-	logininfo();
-	// 发送我的借阅ajax请求
-	var borrowinfo = function () {
-		$.ajax({
-			url: "user/borrowinfo.php",
-			method: "post",
-			before: function () {
-			},
-			success: function (data) {
-				if(data!=null){
-					var borrowinfos = data;
-					borrowinfos = JSON.parse(borrowinfos);
-					loadMyBorrowing(borrowinfos);
+//侧边导航切换
+switchNavigation();
 
-					// 归还按钮-----------------------加入模态框
-					$(".return_perioidcal").click(
-							function () {
-								// get Id
-								let periodical_id = $(this).parent().parent().children(".book_id").html();
-								// console.log(periodical_id);
-								let return_periodical_JSON = {
-									"periodicalID": periodical_id,
-									"message": "return_periodical"
-								};
-								let return_periodical_String = JSON.stringify(return_periodical_JSON);
-								console.log(return_periodical_String);
-								$.ajax({
-									url:"user/sendmessage.php",
-									method:"post",
-									data: return_periodical_String,
-									before: function(){
-										console.log("befire");
-									},
-									success: function(return_periodical_result){
-										var return_periodical_result = JSON.parse(return_periodical_result);
-										console.log("return_periodical_result.istrue");
-										borrowinfo();
-									},
-									error:function(){
-										console.log("error");
-									}
-								});
-								return false;
-						});
-				}
-			},
-			error: function () {
+// “我的主页”tabs切换
+$(".main-page-ul>li>a").click(function () {
+	switchMainPageTabs(this);
+});
+
+//定义加载基本信息函数--ajax
+let logininfo = function () {
+	$.ajax({
+		url: "user/userinfo.php",
+		method: "post",
+		before: function () {
+		},
+		success: function (data) {
+			if(data!=null){
+				var user = data;
+				user = JSON.parse(user);
+				loadBaseInfo(user);
 			}
-		});
-	};
+		},
+		error: function () {
+		}
+	});
+};
+//定义我的借阅信息函数--ajax
+let borrowinfo = function () {
+	$.ajax({
+		url: "user/borrowinfo.php",
+		method: "post",
+		before: function () {
+		},
+		success: function (data) {
+			if(data!=null){
+				var borrowinfos = data;
+				borrowinfos = JSON.parse(borrowinfos);
+				loadMyBorrowing(borrowinfos);
+
+				// 归还按钮-----------------------加入模态框
+				$(".return_perioidcal").click(
+						function () {
+							// get Id
+							let periodical_id = $(this).parent().parent().children(".book_id").html();
+							// console.log(periodical_id);
+							let return_periodical_JSON = {
+								"periodicalID": periodical_id,
+								"message": "return_periodical"
+							};
+							let return_periodical_String = JSON.stringify(return_periodical_JSON);
+							console.log(return_periodical_String);
+							$.ajax({
+								url:"user/sendmessage.php",
+								method:"post",
+								data: return_periodical_String,
+								before: function(){
+									console.log("befire");
+								},
+								success: function(return_periodical_result){
+									var return_periodical_result = JSON.parse(return_periodical_result);
+									console.log("return_periodical_result.istrue");
+									borrowinfo();
+								},
+								error:function(){
+									console.log("error");
+								}
+							});
+							return false;
+					});
+			}
+		},
+		error: function () {
+		}
+	});
+};
+$(function () {
+	//运行加载基本信息函数--ajax
+	logininfo();
+	//运行我的借阅信息函数--ajax
 	borrowinfo();
-	//加载借阅历史
+	//加载借阅历史信息
 	$("#borrowhstory_btn").click(function(){
-		console.log("click btn");
 		$.ajax({
 			url:"user/borrow_history.php",
 			method: "post",
@@ -88,7 +97,7 @@ $(function () {
 			success: function(data){
 				if(data !=null){
 					var borrowHistory_JSON = JSON.parse(data);
-//					console.log(data);
+//					console.log("history"+data);
 					loadBorrowHistory(borrowHistory_JSON);
 				}
 			},
@@ -97,24 +106,20 @@ $(function () {
 			}
 		});
 	});
+	$(".user-home").click(function(){
+		console.log("click 我的主页")
+		borrowinfo();
+	})
 });
-
-
-// 侧边导航切换
-switchNavigation();
-
-// “我的主页”tabs切换
-$(".main-page-ul>li>a").click(function () {
-	switchMainPageTabs(this);
-});
-
-// 验证更改密码
-validateChangePassword();
 
 // 查询期刊功能
 $("#searching").click(function () {
 	searchBook();
 });
+
+//验证更改密码
+validateChangePassword();
+
 //修改密码
 //验证旧密码
 $("#old-psd").blur(function(){
@@ -124,7 +129,7 @@ $("#old-psd").blur(function(){
 			"old_psd": old_psd
 	}
 	$.ajax({
-		url: "user/sendmessageUser.php",
+		url: "user/sendmessage.php",
 		method: "post",
 		data:JSON.stringify(old_psd_JSON),
 		before: function(){
@@ -141,7 +146,7 @@ $("#old-psd").blur(function(){
 		}
 	});
 });
-//跟新密码
+//更新密码
 $("#submint_password").click(function(){
 	let new_psd = $("#new-psd").val();
 	let new_psd_JSON = {
@@ -149,14 +154,14 @@ $("#submint_password").click(function(){
 			"new_psd": new_psd
 	}
 	$.ajax({
-		url: "user/sendmessageUser.php",
+		url: "user/sendmessage.php",
 		method: "post",
 		data:JSON.stringify(new_psd_JSON),
 		before: function(){
 			
 		},
 		success: function(result_modify_message){
-			if(result_modify_message!=data){
+			if(result_modify_message!=null){
 				var result_modify_message = JSON.parse(result_modify_message);
 				console.log(result_modify_message.istrue);
 				if (result_modify_message.istrue == false){
@@ -224,8 +229,7 @@ function loadBorrowHistory(history) {
 // 侧边导航切换
 function switchNavigation() {
 	// 默认选中第一个
-	$(".my-nav>li:first").addClass("sidebar-active").children("a").css("color",
-		"white").children("svg").css("color", "white");
+	$(".my-nav>li:first").addClass("sidebar-active").children("a").css("color","white").children("svg").css("color", "white");
 	let $main_items = $("main");
 
 	$(".nav>li#menu-item").click(
@@ -234,12 +238,10 @@ function switchNavigation() {
 			let index = $(this).index();
 			$main_items.css("display", "none");
 			$main_items[index].style.display = "block";
-			$(".nav>li>a").removeClass("active").css("color", "#333")
-				.children("svg").css("color", "#999");
+			$(".nav>li>a").removeClass("active").css("color", "#333").children("svg").css("color", "#999");
 			$(".nav>li").removeClass("sidebar-active");
 
-			$(this).addClass("sidebar-active").children("a").css("color",
-				"white").children("svg").css("color", "white");
+			$(this).addClass("sidebar-active").children("a").css("color","white").children("svg").css("color", "white");
 		});
 }
 
@@ -289,8 +291,7 @@ function searchBook() {
 			let search_JSON = {
 				"key": key,
 				"search_item": search_item,
-				"page":"5",//第一页的默认页数
-				"message": "search"
+				"message": "listCount"
 			};
 			let search_String = JSON.stringify(search_JSON);
 //			console.log(search_String);
@@ -304,7 +305,7 @@ function searchBook() {
 				},
 				success: function(search_result_first){
 					if(search_result_first!=null){
-							search_result_first = JSON.parse(search_result_first);		
+						search_result_first = JSON.parse(search_result_first);		
 						// 1. 加载表头
 						let $search_result_node = $("#search-result-table");
 						if ($($search_result_node).children().length == 0) {
@@ -324,7 +325,6 @@ function searchBook() {
 										jump: function (obj, first) {
 											// obj包含了当前分页的所有参数，比如：
 											// //得到当前页，以便向服务端请求对应页的数据。
-											 loadcurpage((obj.limit>max_num? max_num: obj.limit),search_result_first.search_result);
 											//ajax
 //											console.log(obj.curr*5);
 											 //构建显示页数请求的json对象（obj.curr为下次显示的页数）
@@ -332,9 +332,10 @@ function searchBook() {
 													"key": key,
 													"search_item": search_item,
 													"page": obj.curr*5,
+													"listCount":max_num,
 													"message": "search"
 												};
-											console.log("page : "+search_JSON.page);
+//											console.log("page : "+search_JSON.page);
 											search_String = JSON.stringify(search_JSON);
 											$.ajax({
 												url: "user/sendmessage.php",
@@ -393,7 +394,7 @@ function loadcurpage(limit, search_result){
 						"periodicalName": current_Btn.parent().parent().children('.willborrow_periodicalName').text(),
 						"message": "willborrowlist"
 						};
-				console.log(borrow_send_data);
+//				console.log("borrow_send_data :"+JSON.stringify(borrow_send_data));
 				$.ajax({
 					url: "user/sendmessage.php",
 					method: "post",
@@ -404,14 +405,14 @@ function loadcurpage(limit, search_result){
 					success: function(willborrowlist_result){
 						if(willborrowlist_result != null){
 							var willborrowlist_result = JSON.parse(willborrowlist_result);	
-							console.log(willborrowlist_result);
+							console.log("willborrowlist_result is "+JSON.stringify(willborrowlist_result));
 							
-							$("<table id='select-periodical' class='table table-hover'></table").appendTo(".modal-body");	
+							$("<table id='select-periodical' class='table table-hover'></table>").appendTo(".modal-body");	
 							
 							$("#select-periodical").empty();
 							
 							for(let i = 0; i < willborrowlist_result.length; i++) {
-								console.log("here:" + i + " :" + willborrowlist_result[i].periodicalName);
+//								console.log("here:" + i + " :" + willborrowlist_result[i].periodicalName);
 								let data = "<tr>" + 
 								    "<td>" + willborrowlist_result[i].issue + "</td>" + 
 									"<td>" + willborrowlist_result[i].periodicalName + "</td>" +
@@ -427,6 +428,7 @@ function loadcurpage(limit, search_result){
 											"borrow_periodicalID": borrow_periodicalID,
 											"message":"borrow_periodical"
 									}
+									console.log("borrow_periodical"+borrow_periodical_JSON);
 									$.ajax({
 										url: "user/sendmessage.php",
 										method: "post",
@@ -451,17 +453,6 @@ function loadcurpage(limit, search_result){
 						}
 					}
 				});
-				/* update 2018-5-15 pm */
-				// 1. 点击借阅 发送数据请求，弹出模态框
-				
-				
-				// 模态框中展示要要借阅的书籍
-				
-				
-				
-				
-				
-
 			});
 		}
 	}
