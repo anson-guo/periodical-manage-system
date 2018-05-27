@@ -95,9 +95,10 @@ public class BossDao {
 		
 	}
 	//返回部门人数
-		public JSONObject departmentCount() {
-			JSONObject department_json = new JSONObject();
-			String sql = "SELECT department,count(1) FROM jichen.readertb group by department";
+		public JSONArray departmentCount() {
+			JSONArray department_jsonArray = new JSONArray();
+			
+			String sql = "SELECT department,count(1) FROM readertb group by department";
 			Connection con = cd.getConnection();
 			PreparedStatement pstmt = null;
 			ResultSet rs = null;
@@ -105,21 +106,24 @@ public class BossDao {
 				pstmt = con.prepareStatement(sql);
 				rs = pstmt.executeQuery();
 				while(rs.next()) {
-					department_json.put(rs.getString(1), rs.getString(2));
+					JSONObject department_json = new JSONObject();
+					department_json.put("department",rs.getString(1));
+					department_json.put("number", rs.getString(2));
+					department_jsonArray.add(department_json);
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} finally {
 				cd.closeAll(con, pstmt, rs);
 			}
-			return department_json;
+			return department_jsonArray;
 			
 		}
 	//验证管理员帐号是否存在
 	public boolean validateEmployee(String employeeID) {
 		boolean istrue = false;
 //		SELECT * FROM jichen.employeetb where employeePD=MD5('jc_admin') and employeeID='20150101';
-		String sql = "select count(1) from employeetb where employeeID=?";
+		String sql = "select employeeID from employeetb where employeeID=?";
 		Connection con = cd.getConnection();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -139,9 +143,9 @@ public class BossDao {
 		return istrue;
 	}
 	//添加管理员
-	public boolean addEmployee(String employeeID, String employeeName,String sex,String post, String employeePD) {
+	public boolean addEmployee(String employeeID, String employeeName,String sex) {
 //		insert into employeetb values ('20150104','谭思颖','女','管理员',MD5('tsy_admin'));
-		String sql = "insert into  values (?,?,?,?,MD5(?)) ";
+		String sql = "insert into employeetb values (?,?,?,'管理员',MD5('gly_admin')) ";
 		Connection con = cd.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -149,27 +153,43 @@ public class BossDao {
 			pstmt.setString(1, employeeID);
 			pstmt.setString(2, employeeName);
 			pstmt.setString(3, sex);
-			pstmt.setString(4, post);
-			pstmt.setString(5, employeePD);
 			pstmt.executeUpdate();
 		}catch(SQLException e) {
 			e.printStackTrace();
 			return false;
+		}finally {
+			cd.closeAll(con, pstmt);
 		}
 		return true;
 	}
 	//修改管理员
 	//修改读者信息
-	public boolean modifyEmployee(String employName, String sex, String employeeID) {
+	public boolean modifyEmployee(String employeeName, String employeeID) {
 //		update employeetb set employeeName='纪臣',sex='女' where employeeID='20150101';
-		String sql = "update employeetb set employName=? , sex=? where employeeID=?";
+		String sql = "update employeetb set employeeName=?  where employeeID=?";
 		Connection con = cd.getConnection();
 		PreparedStatement pstmt = null;
 		try {
 			pstmt =con.prepareStatement(sql);
-			pstmt.setString(1, employName);
-			pstmt.setString(2, sex);
-			pstmt.setString(3, employeeID);
+			pstmt.setString(1, employeeName);
+			pstmt.setString(2, employeeID);
+			pstmt.executeUpdate();
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}finally {
+			cd.closeAll(con, pstmt);
+		}
+		return true;
+	}
+	public boolean deleteEmployee(String employeeID) {
+//		DELETE FROM `periodicaldb`.`employeetb` WHERE `employeeID`='20150002';
+		String sql = "delete from employeetb where employeeID=?";
+		Connection con = cd.getConnection();
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, employeeID);
 			pstmt.executeUpdate();
 		}catch(SQLException e) {
 			e.printStackTrace();

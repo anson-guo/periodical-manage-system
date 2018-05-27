@@ -9,8 +9,8 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 public class PeriodicalDao {
-	private final String TABLE_PP = "pressPeriodicaltb";
-	private final String TABLE_P = "periodicaltb";
+	private final String TABLE_PP = "pressperiodicaltb";
+	private final String TABLE_P = "periodicalstb";
 //	private final String TABLE_PRESS = "presstb";
 	private final String KEY_PRESSID = "pressID";
 //	private final String KEY_PRESSNAME = "PressName";
@@ -112,7 +112,6 @@ public class PeriodicalDao {
 			pstmt.setString(4, periodicalTyep);
 			pstmt.setString(5, press);
 			pstmt.setString(6, df.format(nowtime));
-			pstmt.executeUpdate();
 			pstmt.executeUpdate();
 		}catch (SQLException e) {
 			e.printStackTrace();

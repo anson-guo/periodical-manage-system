@@ -1,57 +1,45 @@
-let test_press = {
-    "0x0001": "川师出版社",
-    "0x0002": "川大出版社",
-    "0x0003": "电子科大出版社"
-};
-
-let test_periodical = {
-    "0x0001": {
-        '001001': "师大之声",
-        "001002": "师大文摘",
-    },
-    "0x0002": {
-        '002001': "川大之声",
-        "002002": "川大文摘",
-    },
-    "0x0003": {
-        '003001': "电子科大之声",
-        "003002": "电子科大文摘",
-    }
-};
-
+// 出版周期
 let publicationCycle = {
-    "N": "年刊",
-    "Y": "月刊",
-    "Z": "周刊"
+    "年刊（N）": "年刊",
+    "月刊（Y）": "月刊",
+    "周刊（Z）": "周刊"
 }
+
+// 获取今年的年份
+let current_date = new Date();
+let current_year = current_date.getFullYear();
+let year_sign =  "00";
+
+let year_obj = {};
+year_obj[year_sign] = current_year; 
+
+
+
+// 月
+let month_obj = {};
+for(let i = 0; i < 12; i ++){
+	let temp = i + 1;
+	if(temp.toString().length == 1) {
+		temp = "0" + temp;
+	}
+	let show_temp = temp + "月";
+	month_obj[temp] = show_temp;
+}
+
+// 周
+let week_obj = {};
+let week_index = 0;
+for(let i = 12; i < 64; i ++){
+	week_index ++;
+	let temp = i + 1;
+	let show_temp =  "第" + week_index + "周";
+	week_obj[temp] = show_temp;
+}
+
+// 出版期号
 let period = {
-    "N": {
-        "2015": "2015年", 
-        "2016": "2016年", 
-        "2017": "2017年", 
-        "2018": "2018年", 
-        "2019": "2019年", 
-        "2020": "2020年" 
-    },
-    "Y": {
-        "01": "一月",
-        "02": "二月",
-        "03": "三月",
-        "04": "四月",
-        "05": "五月",
-        "06": "六月",
-        "07": "七月",
-        "08": "八月",
-        "09": "九月",
-        "10": "十月",
-        "11": "十一月",
-        "12": "十二月"
-    },
-    "Z": {
-        "01": "第一周",
-        "02": "第二周",
-        "03": "第三周",
-        "04": "第四周",
-        "05": "第五周"
-    }
+		"年刊（N）": year_obj,
+		"月刊（Y）": month_obj,
+		"周刊（Z）": week_obj
 }
+

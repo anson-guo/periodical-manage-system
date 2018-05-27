@@ -46,7 +46,7 @@
 rol form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
     <ul class="navbar-nav px-3">
       <li class="nav-item text-nowrap">
-        <a class="nav-link" href="./login.html">退出系统</a>
+        <a class="nav-link" href="logoutServlet">退出系统</a>
       </li>
     </ul>
   </nav>
@@ -65,7 +65,7 @@ rol form-control-dark w-100" type="text" placeholder="Search" aria-label="Search
             <li class="nav-item" id="menu-item">
               <a class="nav-link" href="javascript:;">
                 <span data-feather="home"></span>
-                员工管理
+                管理员信息
               </a>
             </li>
             <li class="nav-item subscript_li" id="menu-item">
@@ -89,17 +89,17 @@ rol form-control-dark w-100" type="text" placeholder="Search" aria-label="Search
             <div class="show-item">
               <h3>系统管理员</h3>
               <div id="myStathalf" data-dimension="250" data-text="" data-info="系统管理员" data-width="30" data-fontsize="38" data-percent="18"
-                data-fgcolor="green" data-bgcolor="#eee"></div>
+                data-fgcolor="#ffe693" data-bgcolor="#eee"></div>
             </div>
             <div class="show-item">
               <h3>读者</h3>
-              <div id="myStat" data-dimension="250" data-text="" data-info="读者" data-width="30" data-fontsize="38" data-percent="40" data-fgcolor="#007bff"
+              <div id="myStat" data-dimension="250" data-text="" data-info="读者" data-width="30" data-fontsize="38" data-percent="40" data-fgcolor="#feb97e"
                 data-bgcolor="#eee"></div>
             </div>
             <div class="show-item">
               <h3>期刊</h3>
               <div id="myStathalf2" data-dimension="250" data-text="" data-info="期刊数量" data-width="30" data-fontsize="38" data-percent="72"
-                data-fgcolor="green" data-bgcolor="#eee" data-icon="fa-task"></div>
+                data-fgcolor="#ff7f74" data-bgcolor="#eee" data-icon="fa-task"></div>
             </div>
           </div>
           <div class="show-data-on-main-page clearfix">
@@ -113,16 +113,16 @@ rol form-control-dark w-100" type="text" placeholder="Search" aria-label="Search
       <!-- 员工管理 -->
       <main role="main" id="main-page" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 hidden">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-          <h1 class="h2">员工管理</h1>
+          <h1 class="h2">管理员信息</h1>
         </div>
         <div class="page-body">
           <div class="manager-main">
             <ul class="nav nav-pills main-page-ul first-nav-ul" role="tablist">
               <li class="nav-item">
-                <a class="nav-link active" data-toggle="pill" href="#add-employee">添加员工</a>
+                <a class="nav-link active" data-toggle="pill" href="#add-employee">添加管理员</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" data-toggle="pill" href="#edit-employee" id="edit-employee-nav">编辑员工</a>
+                <a class="nav-link" data-toggle="pill" href="#edit-employee" id="edit-employee-nav">编辑管理员</a>
               </li>
 
             </ul>
@@ -154,30 +154,17 @@ rol form-control-dark w-100" type="text" placeholder="Search" aria-label="Search
                         <label for="">性别：</label>
                       </td>
                       <td>
-                        <input type="radio" name="sex" id="male" value="male">
+                        <input type="radio" name="sex" id="male" value="男">
                         <label for="male">男</label>
-                        <input type="radio" name="sex" id="female" value="female">
+                        <input type="radio" name="sex" id="female" value="女">
                         <label for="female">女</label>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <label for="">职位：</label>
-                      </td>
-                      <td id="selected">
-                        <select id="" name="department" class="form-control">
-                          <option value="">请选择职位</option>
-                          <option value="buzhang">部长</option>
-                          <option value="kezhang">科长</option>
-                          <option value="zongguan">总管</option>
-                        </select>
                       </td>
                     </tr>
                   </tbody>
                 </table>
                 <div class="submit-add-employee">
                   <input type="reset" value="重置" class="btn btn-secondary">
-                  <input type="submit" value="提交" class="btn btn-primary">
+                  <input type="button" value="提交" class="add_employee_btn btn btn-primary">
                 </div>
               </form>
             </div>
@@ -188,7 +175,6 @@ rol form-control-dark w-100" type="text" placeholder="Search" aria-label="Search
                   <th>职工号</th>
                   <th>姓名</th>
                   <th>性别</th>
-                  <th>职位</th>
                   <th>操作</th>
                 </thead>
                 <tbody class="edit-employee-table-body">

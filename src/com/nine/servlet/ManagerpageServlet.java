@@ -104,8 +104,10 @@ public class ManagerpageServlet extends HttpServlet {
 					resp.getWriter().write(jsonout.toString());
 				}else if(jsonin.getString("message").equals("add_periodical")){
 					jsonout = new JSONObject();
-					jsonout.put("istrue", perd.addPeriodical(jsonin.getString("issue"), jsonin.getString("periodicalName"), jsonin.getString("periodicalTyep"), jsonin.getString("press"), jsonin.getString("seqNum")));
-					System.out.println("添加期刊是否成功"+jsonout);
+					for(int i = 1; i <= Integer.parseInt(jsonin.getString("count")); i++) {
+						jsonout.put("istrue", perd.addPeriodical(jsonin.getString("issue"), jsonin.getString("periodicalName"), jsonin.getString("periodicalType"), jsonin.getString("press"), (i>10?i+"":"0"+i)));
+						System.out.println("添加期刊是否成功"+jsonout);
+					}
 					resp.getWriter().write(jsonout.toString());
 				}
 			}

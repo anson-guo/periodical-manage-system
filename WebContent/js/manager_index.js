@@ -344,7 +344,8 @@ function loadSearchReaderResult(search_result) {
 /* 级联列表 */
 
 // “出版社”与“期刊名”级联
-$("#select_press").click(function () {
+$(".register-periodical").click(function () {
+	console.log("select_press click");
 	let send_select_press = {
 			"message":"getPresses"
 	}
@@ -406,8 +407,9 @@ function setPeriodical() {
 }
 
 // “出版周期”和“订购期数”级联
-$("#select_publicationCycle").click(function () {
+$(".register-periodical").click(function () {
     if ($("#select_publicationCycle").children().length == 1) {
+    	
         for (temp in publicationCycle) {
             $("#select_publicationCycle").get(0).add(new Option(publicationCycle[temp], temp));
         }
@@ -431,46 +433,82 @@ function setPeriod() {
     }
 }
 
+// -----------------------
 
-// 更改订购期刊数量btn
-$("#add").click(function () {
-    if($("#select_number").val() == "---数量---"){
-        $("#select_number").val("0");
+$(".register_btn_02").click(function () {
+    if ($("#input_publicationCycle").children().length == 1) {
+        for (temp in publicationCycle) {
+            $("#input_publicationCycle").get(0).add(new Option(publicationCycle[temp], temp));
+        }
     }
-    // $("#select_number").val("0");
-    let count = $("#select_number").val();
-    $("#select_number").val(++count);
-    return false;
 });
-$("#subtract").click(function() {
-    if($("#select_number").val() == "---数量---"){
-        $("#select_number").val("1");
-    }
-    let count = $("#select_number").val();
-    count--;
-    if(count == 0){
-        bootbox.alert("订购数量不能为零！");
+$("#input_publicationCycle").change(function () {
+    setPeriod_02();
+});
+function setPeriod_02() {
+    let $select_period = $("#input_period");
+    $select_period.get(0).options.length = 1;
+    let period_selected = $("#input_publicationCycle").val();
+    if (!period[period_selected]) {
         return false;
     }
-    $("#select_number").val(count);
-    return false;
-});
+    let secondJSON = period[period_selected];
+    
+    for (temp in secondJSON) {
+        $select_period.get(0).add(new Option(secondJSON[temp], temp));
+    }
+}
+
 
 // 登记期刊--------方式一
-$(function(){
-	$(".add_periodical_btn").click(function(){
+	$("#add_periodical_btn").click(function(){
+		// 标志位
+		let hasSelectAll = true;
+		
+		// 判断是否选择下拉列表
+		$.each($("#method_01 select"), function(){
+				if(this.selectedIndex == 0) {
+					bootbox.alert("请完善下拉列表！");
+					hasSelectAll = false;
+					return false;
+				}
+		});
+		
+		// 如果没有填写完毕， 则跳出该函数
+		if(!hasSelectAll){
+			return false;
+		}
+		
+		let current_date = new Date();
+		let current_year = current_date.getFullYear();
+		let issue = current_year.toString() + $("#select_period option:selected").val().toString();
+		
 		let add_periodical_JSON ={
 				"message":"add_periodical",
 				"press":$("#select_press option:selected").val(),
-				"periodicalName":$("preiodicalName  option:selected").val(),
-				"periodicalType":$("publicationCycle option:selected").val(),
-				"issue":$("select_period option:selected").val(),
-				"count":$("select_number option:selected").val(),
+				"periodicalName":$("#select_preiodicalName option:selected").val(),
+				"periodicalType":$("#select_publicationCycle option:selected").val(),
+				"issue": issue,
+				"count":$("#select_number").val(),
 		}
-		console.log("add_periodical_JSON "+JSON.stringify(add_periodical_JSON));
+		
+		// 打印JSON数据
+//		console.log("add_periodical_JSON "+JSON.stringify(add_periodical_JSON));
+//		
+		 $.ajax({
+				url: "manager/sendmessage.php",
+				method: "post",
+				data: JSON.stringify(add_periodical_JSON),
+				before: function () {
+				},
+				success: function (add_periodical_result) {
+					add_periodical_result = JSON.parse(add_periodical_result);
+					console.log(add_periodical_result);
+				}
+		    });
+		$("#method_01").get(0).reset(); // 复位
 	});
-});
-// 登记期刊--------方式二——用户输入检测
+// 登记期刊--------方式二——用户输入检测	
 $("#method_02").validate({
     messages:
      {
@@ -478,6 +516,33 @@ $("#method_02").validate({
         input_periodicalName: "请输入期刊名！",
         input_number: "请输入订购数量！"
     }
+});
+$(".add_periodical_btn_02").click(function(){
+	let current_date = new Date();
+	let current_year = current_date.getFullYear();
+	let issue = current_year.toString() + $("#input_period option:selected").val().toString();
+	let add_periodical_JSON ={
+			"message":"add_periodical",
+			"press":$("#input_press").val(),
+			"periodicalName":$("#input_periodicalName").val(),
+			"periodicalType":$("#input_publicationCycle option:selected").val(),
+			"issue": issue,
+			"count":$("#input_number").val()
+	}
+	
+	console.log(add_periodical_JSON);
+	$.ajax({
+		url: "manager/sendmessage.php",
+		method: "post",
+		data: JSON.stringify(add_periodical_JSON),
+		before: function () {
+		},
+		success: function (add_periodical_result) {
+			add_periodical_result = JSON.parse(add_periodical_result);
+			console.log(add_periodical_result);
+		}
+    });
+	 
 });
 
 

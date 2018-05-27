@@ -68,12 +68,12 @@ public class LoginServlet extends HttpServlet {
 			String ID = req.getParameter("username");
 			req.getSession().setAttribute("login", true);
 			req.getSession().setAttribute("ID", ID);
-			System.out.println("ID is "+ID);
+//			System.out.println("ID is "+ID);
 			if(ID.length()==10) {
 				resp.sendRedirect("../user_index.html");
 			}else if(ID.length()==8) {
 				String post = md.findPost(ID);
-				System.out.println(post);
+//				System.out.println(post);
 				if(post.equals("老板")) {
 					resp.sendRedirect("../boss_index.html");
 				}else if(post.equals("管理员")) {

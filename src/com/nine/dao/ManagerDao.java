@@ -89,7 +89,7 @@ public class ManagerDao {
 		ResultSet rs = null;
 		//SELECT employeeID, employeeName,sex,post FROM jichen.employeetb;
 		String sql = "select " + KEY_ID + "," + KEY_NAME + "," + KEY_SEX + "," + KEY_POST + 
-				" from " + TABLE_E ;
+				" from " + TABLE_E +" where post!='老板'";
 		try {
 			pstmt = con.prepareStatement(sql);
 			rs = pstmt.executeQuery();

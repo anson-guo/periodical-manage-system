@@ -39,7 +39,7 @@
     <ul class="navbar-nav px-3">
 
       <li class="nav-item text-nowrap">
-        <a class="nav-link" href="./login.html">退出系统</a>
+        <a class="nav-link" href="logoutServlet">退出系统</a>
       </li>
     </ul>
   </nav>
@@ -61,7 +61,7 @@
                 读者管理
               </a>
             </li>
-            <li class="nav-item" id="menu-item">
+            <li class="nav-item register-periodical" id="menu-item">
               <a class="nav-link" href="javascript:;">
                 <span data-feather="shopping-cart"></span>
                 登记期刊
@@ -249,18 +249,20 @@
 
               <select class="form-control" id="select_period">
                 <option value="">--- 订购期数 ---</option>
+                
               </select>
 
-              <input type="text" name="select_number" id="select_number" min="0" class="" value="---数量---" readonly>
+                    <input type="number" min="1" max="10" value="1" name="select_number" id="select_number"  class="form-control" required>
+<!--               <input type="text" name="select_number" id="select_number" min="0" class="" value="---数量---" readonly>
               <button type="button" id="subtract">-</button>
               <button type="button" id="add">+</button>
-
-              <input type="button" value="提交" class="add_periodical_btn btn btn-primary">
+-->
+              <input  id="add_periodical_btn" type="button" value="提交" class="btn btn-primary">
             </form>
           </div>
 
           <!-- 方式二： -->
-          <button class="btn btn-primary method-btn" data-toggle="collapse" data-target="#demo_02">方式二：</button>
+          <button class="register_btn_02 btn btn-primary method-btn" data-toggle="collapse" data-target="#demo_02">方式二：</button>
          
           <div class="order-periodical-table collapse" id="demo_02">
 
@@ -272,7 +274,7 @@
                           <label for="input_press">出版社：</label>
                       </td>
                         <td>
-                          <input type="text" name="input_press" id="input_press" class="form-control" required>
+                          <input type="text" name="input_press" id="input_press" class="form-control" maxlength="10" required>
                         </td>
                       </tr>
                       <tr>
@@ -308,12 +310,12 @@
                             <label for="input_number">订购数量：</label>
                           </td>
                           <td>
-                              <input type="number" min="1" value="1" name="input_number" id="input_number"  class="form-control" required>
+                              <input type="number" min="1" max="10" value="1" name="input_number" id="input_number"  class="form-control" required>
                           </td>
                         </tr>
                     </tbody>
                   </table>
-                  <input type="submit" value="提交" class="btn btn-primary">
+                  <input type="button" value="提交" class="add_periodical_btn_02 btn btn-primary">
             </form>
           </div>
 
@@ -360,9 +362,10 @@
 
       <!-- 测试JSON数据 
       <script src="js/test_JSON_reader.js"></script>
-      <script src="js/test_JSON_jilian_list.js"></script>
+      < 
 -->
       <!-- import JS -->
+      <script src="js/test_JSON_jilian_list.js"></script>
       <script src="js/manager_index.js"></script>
 
 </body>

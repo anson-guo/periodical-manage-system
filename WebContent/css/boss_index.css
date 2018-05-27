@@ -227,10 +227,20 @@ body {
   font-size: 1.1rem;
   margin-bottom: 1rem;
 }
-#show-reader-sex-data, #show-reader-department-data{
-  width: 50%;
+#show-reader-sex-data{
+	width: 35%;
+  	height: 300px;
+  	float: left;
+}
+#show-reader-department-data{
+  width: 65%;
   height: 300px;
   float: left;
+}
+
+.editing{
+	background: white !important;
+    border: 1px solid white !important;
 }
 
 

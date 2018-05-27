@@ -14,6 +14,7 @@ import com.nine.dao.ManagerDao;
 import com.nine.dao.PeriodicalDao;
 import com.nine.dao.ReaderDao;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 public class BosspageServlet extends HttpServlet {
@@ -47,6 +48,13 @@ public class BosspageServlet extends HttpServlet {
 			jsonout.put("departmentCount", bossd.departmentCount());
 			resp.getWriter().write(jsonout.toString());
 		}
+		else if(action.equals("employeeinfo.php")) {
+			JSONArray jsonArray = null;
+			jsonArray = md.getAllEmployee();
+//			System.out.println(jsonArray.toString());
+			resp.getWriter().write(jsonArray.toString());
+			
+		}
 		//有数据传输的功能
 		else if(action.equals("sendmessage.php")) {
 			//获取前端的数据
@@ -62,7 +70,7 @@ public class BosspageServlet extends HttpServlet {
 				jsonin = JSONObject.fromObject(sb.toString());
 				System.out.println("message is "+jsonin.getString("message"));
 				if(jsonin.getString("message").equals("editEmployee")) {
-					jsonout.put("istrue", bossd.modifyEmployee(jsonin.getString("employName"), jsonin.getString("sex"), jsonin.getString("employeeID")));
+					jsonout.put("istrue", bossd.modifyEmployee(jsonin.getString("employeeName"), jsonin.getString("employeeID")));
 					resp.getWriter().write(jsonout.toString());
 					return;
 				}else if(jsonin.getString("message").equals("validateEmployeeID")) {
@@ -71,12 +79,18 @@ public class BosspageServlet extends HttpServlet {
 					return;
 					
 				}else if(jsonin.getString("message").equals("addEmployeeID")) {
-					jsonout.put("istrue", bossd.modifyEmployee(jsonin.getString("employeeID"), jsonin.getString("employeeName"),jsonin.getString("sex")));
+					jsonout.put("istrue", bossd.addEmployee(jsonin.getString("employeeID"), jsonin.getString("employeeName"),jsonin.getString("sex")));
 					resp.getWriter().write(jsonout.toString());
 					return;
 					
 				}else if(jsonin.getString("message").equals("showWorkload")) {
-					md.returnWorkload(jsonin.getString("employeeID"));
+					JSONArray jsonArray = null;
+					jsonArray = md.returnWorkload(jsonin.getString("employeeID"));
+					resp.getWriter().write(jsonArray.toString());
+				}else if(jsonin.getString("message").equals("deleteEmployee")) {
+					jsonout.put("istrue", bossd.deleteEmployee(jsonin.getString("employeeID")));
+//					System.out.println(jsonout.toString());
+					resp.getWriter().write(jsonout.toString());
 				}
 			}
 		}

@@ -46,31 +46,46 @@ let borrowinfo = function () {
 				loadMyBorrowing(borrowinfos);
 
 				// 归还按钮-----------------------加入模态框
-				$(".return_perioidcal").click(
-						function () {
-							// get Id
-							let periodical_id = $(this).parent().parent().children(".book_id").html();
-							// console.log(periodical_id);
-							let return_periodical_JSON = {
-								"periodicalID": periodical_id,
-								"message": "return_periodical"
-							};
-							let return_periodical_String = JSON.stringify(return_periodical_JSON);
-							console.log(return_periodical_String);
-							$.ajax({
-								url:"user/sendmessage.php",
-								method:"post",
-								data: return_periodical_String,
-								before: function(){
-									console.log("befire");
-								},
-								success: function(return_periodical_result){
-									var return_periodical_result = JSON.parse(return_periodical_result);
-									console.log("return_periodical_result.istrue"+return_periodical_result.istrue);
-									borrowinfo();
-								},
-								error:function(){
-									console.log("error");
+				$(".return_perioidcal").click(function () {
+							let $this_node = $(this);
+							bootbox.confirm({
+								message: "您确定要归还此书籍？",
+					            buttons: {
+					                  cancel: {
+					                      label: '<i class="fa fa-times"></i> 取消'
+					                  },
+					                  confirm: {
+					                      label: '<i class="fa fa-check"></i> 确定'
+					                  }
+					            },
+								callback: function(result){
+									if(result){
+										// get Id
+										let periodical_id = $this_node.parent().parent().children(".book_id").html();
+										// console.log(periodical_id);
+										let return_periodical_JSON = {
+											"periodicalID": periodical_id,
+											"message": "return_periodical"
+										};
+										let return_periodical_String = JSON.stringify(return_periodical_JSON);
+										console.log(return_periodical_String);
+										$.ajax({
+											url:"user/sendmessage.php",
+											method:"post",
+											data: return_periodical_String,
+											before: function(){
+												console.log("before");
+											},
+											success: function(return_periodical_result){
+												var return_periodical_result = JSON.parse(return_periodical_result);
+												console.log("return_periodical_result.istrue");
+												borrowinfo();
+											},
+											error:function(){
+												console.log("error");
+											}
+										});
+									}
 								}
 							});
 							return false;
@@ -124,6 +139,9 @@ validateChangePassword();
 //验证旧密码
 $("#old-psd").blur(function(){
 	let old_psd = $(this).val();
+	if(old_psd.length == 0){
+		return false;
+	}
 	let old_psd_JSON = {
 			"message": "validatePassword",
 			"old_psd": old_psd
@@ -141,32 +159,15 @@ $("#old-psd").blur(function(){
 				console.log(result_validate_message.istrue);
 				if (result_validate_message.istrue == false){
 					bootbox.alert("旧密码错误");
+					$("#old-psd").val("");
 				}
 			}
 		}
 	});
 });
-//验证“更改密码”
-function validateChangePassword() {
-	// 验证更改密码
-	$("#change-psd").validate({
-		rules: {
-			"again-psd": {
-				equalTo: "#new-psd"
-			}
-		},
-		messages: {
-			"old-psd": "请输入旧密码！",
-			"new-psd": "请输入新密码！",
-			"again-psd": {
-				required: "请再次输入您的新密码",
-				equalTo: "两次密码输入不一致"
-			}
-		}
-	});
-}
+
 //更新密码
-$("#submint_password").click(function(){
+function changePassword(){
 	let new_psd = $("#new-psd").val();
 	let new_psd_JSON = {
 			"message": "modifyPassword",
@@ -185,6 +186,8 @@ $("#submint_password").click(function(){
 				console.log(result_modify_message.istrue);
 				if (result_modify_message.istrue == false){
 					bootbox.alert("修改失败请重试");
+				} else {
+					bootbox.alert("修改成功！");
 				}
 				$("#new-psd").val("");
 				$("#old-psd").val("");
@@ -192,10 +195,10 @@ $("#submint_password").click(function(){
 			}
 		},
 		error: function(){
-			console.log();
+			console.log("errors");
 		}
 	});
-});
+};
 /* ------------ 一堆的函数 ------------ */
 //
 
@@ -276,7 +279,28 @@ function switchMainPageTabs(obj) {
 	});
 }
 
-
+// 验证“更改密码”
+function validateChangePassword() {
+	// 验证更改密码
+	$("#change-psd").validate({
+		rules: {
+			"again-psd": {
+				equalTo: "#new-psd"
+			}
+		},
+		messages: {
+			"old-psd": "请输入旧密码！",
+			"new-psd": "请输入新密码！",
+			"again-psd": {
+				required: "请再次输入您的新密码",
+				equalTo: "两次密码输入不一致"
+			}
+		},
+		submitHandler:function(form){
+            changePassword();
+        } 
+	});
+}
 
 // 查询期刊功能
 function searchBook() {
@@ -305,8 +329,12 @@ function searchBook() {
 					
 				},
 				success: function(search_result_first){
-					if(search_result_first!=null){
-						search_result_first = JSON.parse(search_result_first);		
+					 
+					search_result_first = JSON.parse(search_result_first);
+					
+//					console.log(" ==========" + search_result_first.listcount);ß
+					
+					if(search_result_first.listcount != 0){
 						// 1. 加载表头
 						let $search_result_node = $("#search-result-table");
 						if ($($search_result_node).children().length == 0) {
@@ -356,6 +384,9 @@ function searchBook() {
 										}
 								});
 						});
+					} else{
+						bootbox.alert("暂无相关搜索结果！");
+						$("#key").val("");
 					}
 				},
 				error: function(){
@@ -385,43 +416,45 @@ function loadcurpage(limit, search_result){
 				+ search_result[i].number
 				+ "</td><td>";
 				$(data+ "<a href='#' class='borrow_periodical_btn btn btn-primary' data-toggle='modal' data-target='#borrow-book'>借阅</a></td></tr>").appendTo($("#search-result-tbody"));
-		}//else end
-	}//for end
-	//点击搜索界面的借阅按钮
-	$(".borrow_periodical_btn").click(function (){
-		console.log("click 搜索界面的借阅按钮");
-		var current_Btn = $(this);
-		var borrow_send_data ={
-				"issue": current_Btn.parent().parent().children('.willborrow_issue').text(),
-				"periodicalName": current_Btn.parent().parent().children('.willborrow_periodicalName').text(),
-				"message": "willborrowlist"
-				};
-		console.log("borrow_send_data :"+JSON.stringify(borrow_send_data));
-		$.ajax({
-			url: "user/sendmessage.php",
-			method: "post",
-			data: JSON.stringify(borrow_send_data),
-			before: function(){
-				
-			},
-			success: function(willborrowlist_result){
-				if(willborrowlist_result != null){
-					var willborrowlist_result = JSON.parse(willborrowlist_result);	
-					console.log("willborrowlist_result is "+JSON.stringify(willborrowlist_result));
+		}//end else
+	}//end for
+//	search_result[i].borrowed == "true"
+		//点击搜索界面的借阅按钮
+		$(".borrow_periodical_btn").click(function (){
+			var current_Btn = $(this);
+			var borrow_send_data ={
+					"issue": current_Btn.parent().parent().children('.willborrow_issue').text(),
+					"periodicalName": current_Btn.parent().parent().children('.willborrow_periodicalName').text(),
+					"message": "willborrowlist"
+					};
+			console.log("borrow_send_data : "+JSON.stringify(borrow_send_data));
+			$.ajax({
+				url: "user/sendmessage.php",
+				method: "post",
+				data: JSON.stringify(borrow_send_data),
+				before: function(){
 					
-					$("<table id='select-periodical' class='table table-hover'></table>").appendTo(".modal-body");	
-					
-					$("#select-periodical").empty();
-					
-					for(let i = 0; i < willborrowlist_result.length; i++) {
-//						console.log("here:" + i + " :" + willborrowlist_result[i].periodicalName);
-						let data = "<tr>" + 
-						    "<td>" + willborrowlist_result[i].issue + "</td>" + 
-							"<td>" + willborrowlist_result[i].periodicalName + "</td>" +
-							"<td>" + willborrowlist_result[i].periodicalID + "</td>" + 
-							"<td>" + "<button class='comfir_borrow_btn btn btn-primary"+(willborrowlist_result[i].borrowed=="true"?" disabled":"")+"'>借阅</button>"+ "</td>" + 
-							"</tr>";
-						$("#select-periodical").append($(data));
+				},
+				success: function(willborrowlist_result){
+					if(willborrowlist_result != null){
+						var willborrowlist_result = JSON.parse(willborrowlist_result);	
+//						console.log("willborrowlist_result is "+JSON.stringify(willborrowlist_result));
+						
+						$("<table id='select-periodical' class='table table-hover'></table>").appendTo(".modal-body");	
+						
+						$("#select-periodical").empty();
+						
+						for(let i = 0; i < willborrowlist_result.length; i++) {
+//							console.log("here:" + i + " :" + willborrowlist_result[i].periodicalName);
+							let data = "<tr>" + 
+							    "<td>" + willborrowlist_result[i].issue + "</td>" + 
+								"<td>" + willborrowlist_result[i].periodicalName + "</td>" +
+								"<td>" + willborrowlist_result[i].periodicalID + "</td>" + 
+								"<td>" + "<button class='comfir_borrow_btn btn btn-primary"+(willborrowlist_result[i].borrowed=="true"?" disabled":"")+"'>借阅</button>"+ "</td>" + 
+								"</tr>";
+							$("#select-periodical").append($(data));
+							
+						}//end for
 						//点击弹出框的借阅按钮
 						$(".comfir_borrow_btn").click(function(){
 							var comfir_borrow_btn = $(this);
@@ -430,7 +463,7 @@ function loadcurpage(limit, search_result){
 									"borrow_periodicalID": borrow_periodicalID,
 									"message":"borrow_periodical"
 							}
-							console.log("borrow_periodical"+JSON.stringify(borrow_periodical_JSON));
+							console.log("borrow_periodical"+ JSON.stringify(borrow_periodical_JSON));
 							$.ajax({
 								url: "user/sendmessage.php",
 								method: "post",
@@ -453,7 +486,9 @@ function loadcurpage(limit, search_result){
 						});
 					}
 				}
-			}
+			});
 		});
-	});
 }
+
+
+ 
