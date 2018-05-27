@@ -23,7 +23,7 @@ public class InitServlet extends HttpServlet {
 		String dataSource = context.getInitParameter("data_source");
 		ComDao.dataSource = dataSource;
 		
-		System.out.println("The sql dialect is set to " + sqlDialect);
-		System.out.println("The data source is set to " + dataSource);
+//		System.out.println("The sql dialect is set to " + sqlDialect);
+//		System.out.println("The data source is set to " + dataSource);
 	}
 }

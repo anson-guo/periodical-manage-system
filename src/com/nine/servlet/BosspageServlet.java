@@ -11,13 +11,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.nine.dao.BossDao;
 import com.nine.dao.ManagerDao;
-import com.nine.dao.PeriodicalDao;
-import com.nine.dao.ReaderDao;
+//import com.nine.dao.PeriodicalDao;
+//import com.nine.dao.ReaderDao;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 public class BosspageServlet extends HttpServlet {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -33,10 +38,10 @@ public class BosspageServlet extends HttpServlet {
 		String action = req.getRequestURI().split("/")[3];
 		System.out.println("--------------------------------- ");
 		System.out.println("manager action is " + action);
-		String BossID =(String) req.getSession().getAttribute("ID");
+//		String BossID =(String) req.getSession().getAttribute("ID");
 		ManagerDao md = new ManagerDao();
-		ReaderDao rd = new ReaderDao();
-		PeriodicalDao perd = new PeriodicalDao();
+//		ReaderDao rd = new ReaderDao();
+//		PeriodicalDao perd = new PeriodicalDao();
 		BossDao bossd = new BossDao();
 		JSONObject jsonout = new JSONObject();
 		//加载用户信息

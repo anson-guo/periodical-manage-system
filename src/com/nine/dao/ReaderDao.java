@@ -207,14 +207,14 @@ public class ReaderDao {
 		ResultSet rs = null;
 //		select readerID,readerName,department,reputation,sex
 //		from readertb
-//		where readerName like '%邓%'
+//		where instr(readerName, '邓')>0
 
 		String sql = "select "+KEY_ID+","+KEY_NAME+","+KEY_DP+","+KEY_RT+","+KEY_SEX+
 					" from "+TABLE_R+
-					" where "+search_item+" like ?";
+					" where instr( "+search_item+" , ?) > 0";
 		try {
 			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, "%"+key+"%");
+			pstmt.setString(1, key);
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				Map<String,String> searchReaderMap = new HashMap<String,String>();

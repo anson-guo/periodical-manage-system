@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 public class PeriodicalDao {
@@ -53,7 +52,6 @@ public class PeriodicalDao {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		JSONObject json_return = new JSONObject();
-		JSONArray jsonArray_return =  new JSONArray();
 //		SELECT * FROM jichen.pressPeriodicaltb where pressID='111';
 		String sql = "select * from "+TABLE_PP+ " where "+KEY_PRESSID+"=?";
 		try {
